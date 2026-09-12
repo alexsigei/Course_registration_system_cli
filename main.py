@@ -1,29 +1,27 @@
-from models.student import Student
-from models.admin import Admin
+from storage.json_storage import JSONStorage
 
 
 def main():
-    student = Student(
-        "Alex",
-        "alex@example.com",
-        "STU001"
-    )
+    storage = JSONStorage()
 
-    admin = Admin(
-        "System Administrator",
-        "admin@example.com",
-        "ADM001"
-    )
+    students = [
+        {
+            "student_id": "STU001",
+            "name": "Alex",
+            "email": "alex@example.com"
+        },
+        {
+            "student_id": "STU002",
+            "name": "John",
+            "email": "john@example.com"
+        }
+    ]
 
-    print(student)
-    print(student.role)
-    print(student.email)
+    storage.save("students.json", students)
 
-    print()
+    loaded_students = storage.load("students.json")
 
-    print(admin)
-    print(admin.role)
-    print(admin.email)
+    print(loaded_students)
 
 
 if __name__ == "__main__":
