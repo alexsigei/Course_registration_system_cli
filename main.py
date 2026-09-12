@@ -1,37 +1,37 @@
-from models.student import Student
-from storage.json_storage import JSONStorage
+from services.auth_service import AuthService
 
 
 def main():
-    student = Student(
-        name="Alex",
-        email="alex@example.com",
-        student_id="STU001",
-        user_id="USR001",
-        salt="example-salt",
-        password_hash="example-hash"
-    )
+    auth = AuthService()
 
-    storage = JSONStorage()
+    try:
+        user = auth.register(
+            name="Alex",
+            email="alex@example.com",
+            password="secret123"
+        )
 
-    storage.save("test_users.json", [student.to_dict()])
+        print("Registered:")
+        print(user)
+        print(user.to_dict())
 
-    saved_data = storage.load("test_users.json")
-
-    loaded_student = Student.from_dict(saved_data[0])
-
-    print("Original:")
-    print(student)
+    except ValueError as error:
+        print("Registration error:", error)
 
     print()
 
-    print("Loaded from JSON:")
-    print(loaded_student)
+    try:
+        logged_in_user = auth.login(
+            email="alex@example.com",
+            password="secret123"
+        )
 
-    print()
+        print("Login successful:")
+        print(logged_in_user)
+        print("Current user:", auth.get_current_user())
 
-    print("Loaded email:")
-    print(loaded_student.email)
+    except ValueError as error:
+        print("Login error:", error)
 
 
 if __name__ == "__main__":
