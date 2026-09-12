@@ -1,6 +1,7 @@
 from models.user import User
 from storage.json_storage import JSONStorage
 from utils.hashing import hash_password, verify_password
+from utils.decorators import login_required, role_required
 
 
 class AuthService:
@@ -67,3 +68,11 @@ class AuthService:
 
     def get_current_user(self):
         return self.current_user
+
+    @login_required
+    def view_profile(self):
+        return self.current_user
+
+    @role_required("admin")
+    def admin_action(self):
+        return "Admin action completed successfully."

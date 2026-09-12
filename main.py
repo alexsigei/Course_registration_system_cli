@@ -5,33 +5,44 @@ def main():
     auth = AuthService()
 
     try:
-        user = auth.register(
-            name="Alex",
-            email="alex@example.com",
-            password="secret123"
-        )
+        auth.view_profile()
 
-        print("Registered:")
-        print(user)
-        print(user.to_dict())
+    except PermissionError as error:
+        print("Before login:", error)
 
-    except ValueError as error:
-        print("Registration error:", error)
-
-    print()
-
+    # Login existing student
     try:
-        logged_in_user = auth.login(
+        user = auth.login(
             email="alex@example.com",
             password="secret123"
         )
 
-        print("Login successful:")
-        print(logged_in_user)
-        print("Current user:", auth.get_current_user())
+        print("Logged in as:", user)
+        print("Role:", user.role)
 
     except ValueError as error:
         print("Login error:", error)
+        return
+
+    print()
+
+    # Test login_required
+    try:
+        profile = auth.view_profile()
+        print("Profile access:", profile)
+
+    except PermissionError as error:
+        print("Permission error:", error)
+
+    print()
+
+    # Test admin access
+    try:
+        result = auth.admin_action()
+        print(result)
+
+    except PermissionError as error:
+        print("Admin access:", error)
 
 
 if __name__ == "__main__":
