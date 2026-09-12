@@ -1,0 +1,11 @@
+[
+    {
+        "user_id": "USR001",
+        "name": "Alex",
+        "email": "alex@example.com",
+        "role": "student",
+        "salt": "example-salt",
+        "password_hash": "example-hash",
+        "student_id": "STU001"
+    }
+]
