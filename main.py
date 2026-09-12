@@ -1,27 +1,25 @@
-from storage.json_storage import JSONStorage
+from utils.hashing import hash_password, verify_password
 
 
 def main():
-    storage = JSONStorage()
+    password = "secret123"
 
-    students = [
-        {
-            "student_id": "STU001",
-            "name": "Alex",
-            "email": "alex@example.com"
-        },
-        {
-            "student_id": "STU002",
-            "name": "John",
-            "email": "john@example.com"
-        }
-    ]
+    salt, password_hash = hash_password(password)
 
-    storage.save("students.json", students)
+    print("Salt:", salt)
+    print("Hash:", password_hash)
 
-    loaded_students = storage.load("students.json")
+    print("Correct password:", verify_password(
+        "secret123",
+        salt,
+        password_hash
+    ))
 
-    print(loaded_students)
+    print("Wrong password:", verify_password(
+        "wrongpassword",
+        salt,
+        password_hash
+    ))
 
 
 if __name__ == "__main__":
