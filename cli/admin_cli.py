@@ -401,6 +401,8 @@ def manage_students():
 
 
 def view_active_enrollments():
+     # Display only enrollments that are currently active and therefore
+    # eligible for result entry.
     result_service = ResultService()
 
     enrollments = result_service.get_active_enrollments()
@@ -433,6 +435,9 @@ def view_active_enrollments():
 
 
 def enter_result():
+    # Admin-facing result entry screen.
+    # The CLI collects the enrollment ID and score, while ResultService
+    # performs validation, grading, and enrollment-status updates.
     result_service = ResultService()
 
     console.print(
@@ -441,6 +446,8 @@ def enter_result():
 
     enrollments = result_service.get_active_enrollments()
 
+    # Do not ask the administrator for a result when there are no
+    # active enrollments available for grading.
     if not enrollments:
         console.print(
             "\n[yellow]There are no active enrollments.[/yellow]"
@@ -465,15 +472,21 @@ def enter_result():
     console.print()
     console.print(table)
 
+    # Select the enrollment that is being graded.
     enrollment_id = console.input(
         "\nEnter enrollment ID: "
     )
+
+    # The score is passed to ResultService as text; validate_score()
+    # converts and validates it before a Result object is created.
 
     score = console.input(
         "Enter score (0-100): "
     )
 
     try:
+        # ResultService handles the complete result workflow and returns
+        # the newly created Result object for display.
         result = result_service.enter_result(
             enrollment_id=enrollment_id,
             score=score
@@ -482,6 +495,7 @@ def enter_result():
         console.print(
             "\n[green]Result recorded successfully.[/green]"
         )
+        # Display the calculated academic result to the administrator.
 
         console.print(
             f"Student: {result.student_id}"
@@ -498,6 +512,8 @@ def enter_result():
         console.print(
             f"Grade: {result.grade}"
         )
+        # The PASS/FAIL value comes from Result.passed, which compares
+        # the score against the module's configured pass mark.
 
         if result.passed:
             console.print(
