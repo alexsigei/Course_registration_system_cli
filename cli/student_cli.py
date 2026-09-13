@@ -280,6 +280,58 @@ def enroll_in_module(user):
         )
 
 
+def show_my_enrollments(user):
+    enrollment_service = EnrollmentService()
+    result_service = ResultService()
+
+    student_enrollments = (
+        enrollment_service.get_student_enrollments(
+            user.student_id
+        )
+    )
+
+    if not student_enrollments:
+        console.print(
+            "\n[yellow]You have no enrollments.[/yellow]"
+        )
+        return
+
+    results = result_service.get_student_results(
+        user.student_id
+    )
+
+    table = Table(title="My Enrollments")
+
+    table.add_column("Enrollment")
+    table.add_column("Module")
+    table.add_column("Cohort")
+    table.add_column("Status")
+    table.add_column("Score")
+    table.add_column("Grade")
+
+    for enrollment in student_enrollments:
+
+        score = "-"
+        grade = "-"
+
+        for result in results:
+            if result.enrollment_id == enrollment.enrollment_id:
+                score = f"{result.score}%"
+                grade = result.grade
+                break
+
+        table.add_row(
+            enrollment.enrollment_id,
+            enrollment.module_id,
+            enrollment.cohort_id,
+            enrollment.status,
+            score,
+            grade
+        )
+
+    console.print()
+    console.print(table)
+
 
 def show_progress(user):
     service = ProgressionService()
