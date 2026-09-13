@@ -11,6 +11,7 @@ console = Console()
 
 
 def show_profile(user):
+    # Display student profile
     console.print("\n[bold cyan]My Profile[/bold cyan]")
 
     table = Table()
@@ -31,6 +32,7 @@ def show_profile(user):
 
 
 def browse_courses():
+    # Show available courses
     service = CourseService()
 
     courses = service.get_courses()
@@ -57,6 +59,7 @@ def browse_courses():
 
 
 def view_modules():
+    # Display modules for each course
     service = CourseService()
 
     courses = service.get_courses()
@@ -104,6 +107,7 @@ def view_modules():
 
 
 def enroll_in_module(user):
+    # Handle student module enrollment
     progression_service = ProgressionService()
     enrollment_service = EnrollmentService()
 
@@ -111,6 +115,7 @@ def enroll_in_module(user):
         user.student_id
     )
 
+    # Find modules currently available
     available_modules = [
         item
         for item in progress
@@ -152,6 +157,7 @@ def enroll_in_module(user):
         "\nSelect module number: "
     ).strip()
 
+    # Validate module selection
     try:
         choice = int(choice)
     except ValueError:
@@ -172,6 +178,7 @@ def enroll_in_module(user):
 
     module_id = selected_module["module_id"]
 
+    # Find available cohorts
     cohorts = enrollment_service.get_cohorts_for_module(
         module_id
     )
@@ -225,6 +232,7 @@ def enroll_in_module(user):
         "\nSelect cohort number: "
     ).strip()
 
+    # Validate cohort selection
     try:
         choice = int(choice)
     except ValueError:
@@ -243,6 +251,7 @@ def enroll_in_module(user):
         choice - 1
     ]
 
+    # Create the enrollment
     try:
         enrollment = enrollment_service.enroll_student(
             student_id=user.student_id,
@@ -264,6 +273,7 @@ def enroll_in_module(user):
             f"Cohort: {enrollment.cohort_id}"
         )
 
+        # Show remaining cohort seats
         remaining_seats = (
             enrollment_service.get_available_seats(
                 selected_cohort.cohort_id
@@ -281,6 +291,7 @@ def enroll_in_module(user):
 
 
 def show_my_enrollments(user):
+    # Display student's enrollments and results
     enrollment_service = EnrollmentService()
     result_service = ResultService()
 
@@ -314,6 +325,7 @@ def show_my_enrollments(user):
         score = "-"
         grade = "-"
 
+        # Match enrollment with its result
         for result in results:
             if result.enrollment_id == enrollment.enrollment_id:
                 score = f"{result.score}%"
@@ -334,6 +346,7 @@ def show_my_enrollments(user):
 
 
 def show_progress(user):
+    # Display academic progression
     service = ProgressionService()
 
     progress = service.get_student_progress(
@@ -378,12 +391,14 @@ def show_progress(user):
             grade
         )
 
+        # Count passed modules
         if item["status"] == "PASSED":
             passed_count += 1
 
     console.print()
     console.print(table)
 
+    # Calculate progress percentage
     total_modules = len(progress)
 
     percentage = (
@@ -401,6 +416,7 @@ def show_progress(user):
 
 
 def repeat_failed_module(user):
+    # Handle failed module repetition
     progression_service = ProgressionService()
 
     failed_modules = (
@@ -448,6 +464,7 @@ def repeat_failed_module(user):
         "\nSelect module number to repeat: "
     ).strip()
 
+    # Validate module selection
     try:
         choice = int(choice)
     except ValueError:
@@ -468,6 +485,7 @@ def repeat_failed_module(user):
 
     module_id = selected_module["module_id"]
 
+    # Find cohorts available for repeating
     cohorts = progression_service.get_repeat_cohorts(
         student_id=user.student_id,
         module_id=module_id
@@ -516,6 +534,7 @@ def repeat_failed_module(user):
         "\nSelect repeat cohort number: "
     ).strip()
 
+    # Validate repeat cohort
     try:
         choice = int(choice)
     except ValueError:
@@ -534,6 +553,7 @@ def repeat_failed_module(user):
         choice - 1
     ]
 
+    # Create repeat enrollment
     try:
         enrollment = progression_service.repeat_module(
             student_id=user.student_id,
@@ -563,6 +583,7 @@ def repeat_failed_module(user):
 
 
 def show_student_menu(user):
+    # Display the main student menu
     while True:
         console.print(
             "\n[bold cyan]Student Menu[/bold cyan]"
