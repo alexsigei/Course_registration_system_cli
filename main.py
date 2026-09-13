@@ -1,48 +1,60 @@
 from services.auth_service import AuthService
+from cli.menu import show_welcome, show_main_menu
+from cli.auth_cli import get_login_details, get_registration_details
+from cli.student_cli import show_student_menu
+from cli.admin_cli import show_admin_menu
 
 
 def main():
     auth = AuthService()
 
-    try:
-        auth.view_profile()
+    show_welcome()
 
-    except PermissionError as error:
-        print("Before login:", error)
+    while True:
+        show_main_menu()
 
-    # Login existing student
-    try:
-        user = auth.login(
-            email="alex@example.com",
-            password="secret123"
-        )
+        choice = input("\nChoose an option: ")
 
-        print("Logged in as:", user)
-        print("Role:", user.role)
+        if choice == "1":
+            email, password = get_login_details()
 
-    except ValueError as error:
-        print("Login error:", error)
-        return
+            try:
+                user = auth.login(email, password)
 
-    print()
+                print(f"\nLogin successful. Welcome, {user.name}!")
 
-    # Test login_required
-    try:
-        profile = auth.view_profile()
-        print("Profile access:", profile)
+                if user.role == "student":
+                    show_student_menu(user)
 
-    except PermissionError as error:
-        print("Permission error:", error)
+                elif user.role == "admin":
+                    show_admin_menu(user)
 
-    print()
+                auth.logout()
 
-    # Test admin access
-    try:
-        result = auth.admin_action()
-        print(result)
+            except ValueError as error:
+                print(f"\nLogin failed: {error}")
 
-    except PermissionError as error:
-        print("Admin access:", error)
+        elif choice == "2":
+            name, email, password = get_registration_details()
+
+            try:
+                user = auth.register(
+                    name=name,
+                    email=email,
+                    password=password
+                )
+
+                print(f"\nAccount created for {user.name}.")
+
+            except ValueError as error:
+                print(f"\nRegistration failed: {error}")
+
+        elif choice == "3":
+            print("\nGoodbye!")
+            break
+
+        else:
+            print("\nInvalid choice. Please select 1, 2 or 3.")
 
 
 if __name__ == "__main__":
