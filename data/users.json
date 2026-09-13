@@ -5,7 +5,8 @@
         "email": "alex@example.com",
         "role": "student",
         "salt": "ff4d8a50ba00933f03e855c30fb92a68",
-        "password_hash": "dfc2b40792f1dd0499ebf69173f8058ff3c81f27aedee8091cb79ccd341d210f"
+        "password_hash": "dfc2b40792f1dd0499ebf69173f8058ff3c81f27aedee8091cb79ccd341d210f",
+        "student_id": "STU001"
     },
     {
         "user_id": "USR002",

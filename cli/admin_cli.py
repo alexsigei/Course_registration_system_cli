@@ -3,6 +3,7 @@ from rich.table import Table
 
 from services.course_service import CourseService
 from services.cohort_service import CohortService
+from services.student_service import StudentService
 
 
 console = Console()
@@ -235,6 +236,93 @@ def manage_cohorts():
             )
 
 
+def view_students():
+    student_service = StudentService()
+
+    students = student_service.get_students()
+
+    if not students:
+        console.print(
+            "\n[yellow]No students registered.[/yellow]"
+        )
+        return
+
+    table = Table(title="Registered Students")
+
+    table.add_column("Student ID")
+    table.add_column("Name")
+    table.add_column("Email")
+
+    for student in students:
+        table.add_row(
+            student.student_id,
+            student.name,
+            student.email
+        )
+
+    console.print()
+    console.print(table)
+
+
+def view_student():
+    student_service = StudentService()
+
+    student_id = console.input(
+        "\nEnter student ID: "
+    )
+
+    try:
+        student = student_service.get_student(
+            student_id
+        )
+
+        console.print("\n[bold cyan]Student Profile[/bold cyan]")
+
+        console.print(
+            f"Student ID: {student.student_id}"
+        )
+        console.print(
+            f"Name: {student.name}"
+        )
+        console.print(
+            f"Email: {student.email}"
+        )
+
+    except ValueError as error:
+        console.print(
+            f"\n[red]{error}[/red]"
+        )
+
+
+def manage_students():
+    while True:
+        console.print(
+            "\n[bold cyan]Student Management[/bold cyan]"
+        )
+
+        console.print("1. View Students")
+        console.print("2. View Student")
+        console.print("3. Back")
+
+        choice = console.input(
+            "\nChoose an option: "
+        )
+
+        if choice == "1":
+            view_students()
+
+        elif choice == "2":
+            view_student()
+
+        elif choice == "3":
+            break
+
+        else:
+            console.print(
+                "\n[red]Invalid choice.[/red]"
+            )
+
+
 def show_admin_menu(user):
     while True:
         console.print("\n[bold cyan]Admin Menu[/bold cyan]")
@@ -259,9 +347,7 @@ def show_admin_menu(user):
             manage_cohorts()
 
         elif choice == "4":
-            console.print(
-                "\nStudent management will be implemented next."
-            )
+            manage_students()
 
         elif choice == "5":
             console.print(
