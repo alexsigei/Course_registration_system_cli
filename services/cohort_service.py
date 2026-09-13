@@ -1,5 +1,6 @@
 from models.cohort import Cohort
 from storage.json_storage import JSONStorage
+from utils.validators import validate_capacity
 
 
 class CohortService:
@@ -80,10 +81,7 @@ class CohortService:
             )
 
         # Validate capacity
-        if capacity <= 0:
-            raise ValueError(
-                "Cohort capacity must be greater than 0."
-            )
+        capacity = validate_capacity(capacity)
 
         cohort = Cohort(
             cohort_id=cohort_id,

@@ -2,6 +2,7 @@ from models.result import Result
 from models.enrollment import Enrollment
 from models.module import Module
 from storage.json_storage import JSONStorage
+from utils.validators import validate_score
 
 
 class ResultService:
@@ -66,10 +67,7 @@ class ResultService:
         enrollment_id,
         score
     ):
-        if score < 0 or score > 100:
-            raise ValueError(
-                "Score must be between 0 and 100."
-            )
+        score = validate_score(score)
 
         enrollments = self._load_enrollments()
         results = self._load_results()

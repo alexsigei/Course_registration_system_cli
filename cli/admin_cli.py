@@ -64,7 +64,7 @@ def add_course():
         )
 
         console.print(
-            f"\n[green]Course created successfully.[/green]"
+            "\n[green]Course created successfully.[/green]"
         )
         console.print(course)
 
@@ -82,13 +82,14 @@ def add_module():
     module_id = console.input("Module ID: ")
     course_id = console.input("Course ID: ")
     name = console.input("Module name: ")
+
     pass_mark_input = console.input(
         "Pass mark (default 50): "
     )
 
     try:
         if pass_mark_input.strip():
-            pass_mark = int(pass_mark_input)
+            pass_mark = float(pass_mark_input)
         else:
             pass_mark = 50
 
@@ -105,7 +106,7 @@ def add_module():
         )
 
         console.print(
-            f"\n[green]Module created successfully.[/green]"
+            "\n[green]Module created successfully.[/green]"
         )
         console.print(module)
 
@@ -117,14 +118,18 @@ def add_module():
 
 def manage_courses():
     while True:
-        console.print("\n[bold cyan]Course Management[/bold cyan]")
+        console.print(
+            "\n[bold cyan]Course Management[/bold cyan]"
+        )
 
         console.print("1. View Courses")
         console.print("2. Add Course")
         console.print("3. Add Module")
         console.print("4. Back")
 
-        choice = console.input("\nChoose an option: ")
+        choice = console.input(
+            "\nChoose an option: "
+        )
 
         if choice == "1":
             view_courses()
@@ -188,11 +193,9 @@ def add_cohort():
     cohort_id = console.input("Cohort ID: ")
     module_id = console.input("Module ID: ")
     name = console.input("Cohort name: ")
-    capacity_input = console.input("Capacity: ")
+    capacity = console.input("Capacity: ")
 
     try:
-        capacity = int(capacity_input)
-
         cohort = cohort_service.add_cohort(
             cohort_id=cohort_id,
             module_id=module_id,
@@ -214,13 +217,17 @@ def add_cohort():
 
 def manage_cohorts():
     while True:
-        console.print("\n[bold cyan]Cohort Management[/bold cyan]")
+        console.print(
+            "\n[bold cyan]Cohort Management[/bold cyan]"
+        )
 
         console.print("1. View Cohorts")
         console.print("2. Add Cohort")
         console.print("3. Back")
 
-        choice = console.input("\nChoose an option: ")
+        choice = console.input(
+            "\nChoose an option: "
+        )
 
         if choice == "1":
             view_cohorts()
@@ -277,14 +284,18 @@ def view_student():
             student_id
         )
 
-        console.print("\n[bold cyan]Student Profile[/bold cyan]")
+        console.print(
+            "\n[bold cyan]Student Profile[/bold cyan]"
+        )
 
         console.print(
             f"Student ID: {student.student_id}"
         )
+
         console.print(
             f"Name: {student.name}"
         )
+
         console.print(
             f"Email: {student.email}"
         )
@@ -393,13 +404,11 @@ def enter_result():
         "\nEnter enrollment ID: "
     )
 
-    score_input = console.input(
+    score = console.input(
         "Enter score (0-100): "
     )
 
     try:
-        score = float(score_input)
-
         result = result_service.enter_result(
             enrollment_id=enrollment_id,
             score=score
@@ -412,12 +421,15 @@ def enter_result():
         console.print(
             f"Student: {result.student_id}"
         )
+
         console.print(
             f"Module: {result.module_id}"
         )
+
         console.print(
             f"Score: {result.score}%"
         )
+
         console.print(
             f"Grade: {result.grade}"
         )
@@ -439,8 +451,13 @@ def enter_result():
 
 def show_admin_menu(user):
     while True:
-        console.print("\n[bold cyan]Admin Menu[/bold cyan]")
-        console.print(f"Welcome, {user.name}!\n")
+        console.print(
+            "\n[bold cyan]Admin Menu[/bold cyan]"
+        )
+
+        console.print(
+            f"Welcome, {user.name}!\n"
+        )
 
         console.print("1. View Profile")
         console.print("2. Manage Courses")
@@ -449,7 +466,9 @@ def show_admin_menu(user):
         console.print("5. Enter Results")
         console.print("6. Logout")
 
-        choice = console.input("\nChoose an option: ")
+        choice = console.input(
+            "\nChoose an option: "
+        )
 
         if choice == "1":
             show_profile(user)
@@ -467,7 +486,9 @@ def show_admin_menu(user):
             enter_result()
 
         elif choice == "6":
-            console.print("\nLogging out...")
+            console.print(
+                "\nLogging out..."
+            )
             break
 
         else:
