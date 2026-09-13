@@ -1,60 +1,57 @@
-from services.auth_service import AuthService
-from cli.menu import show_welcome, show_main_menu
-from cli.auth_cli import get_login_details, get_registration_details
-from cli.student_cli import show_student_menu
-from cli.admin_cli import show_admin_menu
+from models.course import Course
+from models.module import Module
+from models.cohort import Cohort
 
 
 def main():
-    auth = AuthService()
+    course = Course(
+        course_id="CS101",
+        name="Computer Science Fundamentals",
+        description="Introduction to computer science."
+    )
 
-    show_welcome()
+    module = Module(
+        module_id="MOD001",
+        course_id="CS101",
+        name="Python Programming",
+        pass_mark=50
+    )
 
-    while True:
-        show_main_menu()
+    course.add_module(module.module_id)
 
-        choice = input("\nChoose an option: ")
+    cohort = Cohort(
+        cohort_id="COH001",
+        module_id=module.module_id,
+        name="Python Cohort A",
+        capacity=2
+    )
 
-        if choice == "1":
-            email, password = get_login_details()
+    print(course)
+    print(course.to_dict())
 
-            try:
-                user = auth.login(email, password)
+    print()
 
-                print(f"\nLogin successful. Welcome, {user.name}!")
+    print(module)
+    print("Score 75 passed:", module.is_passed(75))
+    print("Score 40 passed:", module.is_passed(40))
 
-                if user.role == "student":
-                    show_student_menu(user)
+    print()
 
-                elif user.role == "admin":
-                    show_admin_menu(user)
+    print(cohort)
+    print("Seats:", cohort.seats_available)
 
-                auth.logout()
+    cohort.add_student("STU001")
+    print(cohort)
 
-            except ValueError as error:
-                print(f"\nLogin failed: {error}")
+    cohort.add_student("STU002")
+    print(cohort)
 
-        elif choice == "2":
-            name, email, password = get_registration_details()
+    print("Is full:", cohort.is_full)
 
-            try:
-                user = auth.register(
-                    name=name,
-                    email=email,
-                    password=password
-                )
-
-                print(f"\nAccount created for {user.name}.")
-
-            except ValueError as error:
-                print(f"\nRegistration failed: {error}")
-
-        elif choice == "3":
-            print("\nGoodbye!")
-            break
-
-        else:
-            print("\nInvalid choice. Please select 1, 2 or 3.")
+    try:
+        cohort.add_student("STU003")
+    except ValueError as error:
+        print("Enrollment error:", error)
 
 
 if __name__ == "__main__":
