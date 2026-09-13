@@ -1,57 +1,43 @@
-from models.course import Course
-from models.module import Module
 from models.cohort import Cohort
+from services.enrollment_service import EnrollmentService
+from storage.json_storage import JSONStorage
 
 
 def main():
-    course = Course(
-        course_id="CS101",
-        name="Computer Science Fundamentals",
-        description="Introduction to computer science."
-    )
-
-    module = Module(
-        module_id="MOD001",
-        course_id="CS101",
-        name="Python Programming",
-        pass_mark=50
-    )
-
-    course.add_module(module.module_id)
+    storage = JSONStorage()
 
     cohort = Cohort(
         cohort_id="COH001",
-        module_id=module.module_id,
+        module_id="MOD001",
         name="Python Cohort A",
         capacity=2
     )
 
-    print(course)
-    print(course.to_dict())
+    storage.save(
+        "cohorts.json",
+        [cohort.to_dict()]
+    )
 
-    print()
+    enrollment_service = EnrollmentService(storage)
 
-    print(module)
-    print("Score 75 passed:", module.is_passed(75))
-    print("Score 40 passed:", module.is_passed(40))
+    print(
+        "Available seats:",
+        enrollment_service.get_available_seats("COH001")
+    )
 
-    print()
+    enrollment = enrollment_service.enroll_student(
+        student_id="STU003",
+        module_id="MOD001",
+        cohort_id="COH001"
+    )
 
-    print(cohort)
-    print("Seats:", cohort.seats_available)
+    print("\nEnrollment created:")
+    print(enrollment)
 
-    cohort.add_student("STU001")
-    print(cohort)
-
-    cohort.add_student("STU002")
-    print(cohort)
-
-    print("Is full:", cohort.is_full)
-
-    try:
-        cohort.add_student("STU003")
-    except ValueError as error:
-        print("Enrollment error:", error)
+    print(
+        "\nAvailable seats:",
+        enrollment_service.get_available_seats("COH001")
+    )
 
 
 if __name__ == "__main__":

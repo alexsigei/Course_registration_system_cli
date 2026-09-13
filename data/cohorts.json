@@ -1,0 +1,9 @@
+[
+    {
+        "cohort_id": "COH001",
+        "module_id": "MOD001",
+        "name": "Python Cohort A",
+        "capacity": 2,
+        "student_ids": []
+    }
+]
