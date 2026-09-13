@@ -4,6 +4,7 @@ from rich.table import Table
 from services.course_service import CourseService
 from services.cohort_service import CohortService
 from services.student_service import StudentService
+from services.result_service import ResultService
 
 
 console = Console()
@@ -323,6 +324,119 @@ def manage_students():
             )
 
 
+def view_active_enrollments():
+    result_service = ResultService()
+
+    enrollments = result_service.get_active_enrollments()
+
+    if not enrollments:
+        console.print(
+            "\n[yellow]There are no active enrollments.[/yellow]"
+        )
+        return
+
+    table = Table(title="Active Enrollments")
+
+    table.add_column("Enrollment")
+    table.add_column("Student")
+    table.add_column("Module")
+    table.add_column("Cohort")
+    table.add_column("Status")
+
+    for enrollment in enrollments:
+        table.add_row(
+            enrollment.enrollment_id,
+            enrollment.student_id,
+            enrollment.module_id,
+            enrollment.cohort_id,
+            enrollment.status
+        )
+
+    console.print()
+    console.print(table)
+
+
+def enter_result():
+    result_service = ResultService()
+
+    console.print(
+        "\n[bold cyan]Enter Student Result[/bold cyan]"
+    )
+
+    enrollments = result_service.get_active_enrollments()
+
+    if not enrollments:
+        console.print(
+            "\n[yellow]There are no active enrollments.[/yellow]"
+        )
+        return
+
+    table = Table(title="Active Enrollments")
+
+    table.add_column("Enrollment")
+    table.add_column("Student")
+    table.add_column("Module")
+    table.add_column("Cohort")
+
+    for enrollment in enrollments:
+        table.add_row(
+            enrollment.enrollment_id,
+            enrollment.student_id,
+            enrollment.module_id,
+            enrollment.cohort_id
+        )
+
+    console.print()
+    console.print(table)
+
+    enrollment_id = console.input(
+        "\nEnter enrollment ID: "
+    )
+
+    score_input = console.input(
+        "Enter score (0-100): "
+    )
+
+    try:
+        score = float(score_input)
+
+        result = result_service.enter_result(
+            enrollment_id=enrollment_id,
+            score=score
+        )
+
+        console.print(
+            "\n[green]Result recorded successfully.[/green]"
+        )
+
+        console.print(
+            f"Student: {result.student_id}"
+        )
+        console.print(
+            f"Module: {result.module_id}"
+        )
+        console.print(
+            f"Score: {result.score}%"
+        )
+        console.print(
+            f"Grade: {result.grade}"
+        )
+
+        if result.passed:
+            console.print(
+                "[green]Status: PASS[/green]"
+            )
+        else:
+            console.print(
+                "[red]Status: FAIL[/red]"
+            )
+
+    except ValueError as error:
+        console.print(
+            f"\n[red]Failed to enter result: {error}[/red]"
+        )
+
+
 def show_admin_menu(user):
     while True:
         console.print("\n[bold cyan]Admin Menu[/bold cyan]")
@@ -350,9 +464,7 @@ def show_admin_menu(user):
             manage_students()
 
         elif choice == "5":
-            console.print(
-                "\nResult management will be implemented next."
-            )
+            enter_result()
 
         elif choice == "6":
             console.print("\nLogging out...")

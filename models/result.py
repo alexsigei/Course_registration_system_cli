@@ -5,16 +5,18 @@ class Result:
         student_id,
         module_id,
         enrollment_id,
-        score
+        score,
+        pass_mark=50
     ):
         self.result_id = result_id
         self.student_id = student_id
         self.module_id = module_id
         self.enrollment_id = enrollment_id
         self.score = score
+        self.pass_mark = pass_mark
 
         self.grade = self.calculate_grade()
-        self.passed = self.score >= 50
+        self.passed = self.score >= self.pass_mark
 
     def calculate_grade(self):
         if self.score >= 70:
@@ -35,6 +37,7 @@ class Result:
             "module_id": self.module_id,
             "enrollment_id": self.enrollment_id,
             "score": self.score,
+            "pass_mark": self.pass_mark,
             "grade": self.grade,
             "passed": self.passed
         }
@@ -46,7 +49,8 @@ class Result:
             student_id=data["student_id"],
             module_id=data["module_id"],
             enrollment_id=data["enrollment_id"],
-            score=data["score"]
+            score=data["score"],
+            pass_mark=data.get("pass_mark", 50)
         )
 
     def __str__(self):

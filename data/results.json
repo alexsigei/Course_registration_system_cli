@@ -5,6 +5,7 @@
         "module_id": "MOD001",
         "enrollment_id": "ENR001",
         "score": 75,
+        "pass_mark": 50,
         "grade": "A",
         "passed": true
     },
@@ -14,7 +15,38 @@
         "module_id": "MOD001",
         "enrollment_id": "ENR002",
         "score": 42,
+        "pass_mark": 50,
         "grade": "D",
         "passed": false
+    },
+    {
+        "result_id": "RES003",
+        "student_id": "STU001",
+        "module_id": "MOD001",
+        "enrollment_id": "ENR004",
+        "score": 75.0,
+        "pass_mark": 50,
+        "grade": "A",
+        "passed": true
+    },
+    {
+        "result_id": "RES004",
+        "student_id": "STU002",
+        "module_id": "MOD002",
+        "enrollment_id": "ENR005",
+        "score": 42.0,
+        "pass_mark": 50,
+        "grade": "D",
+        "passed": false
+    },
+    {
+        "result_id": "RES005",
+        "student_id": "STU002",
+        "module_id": "MOD002",
+        "enrollment_id": "ENR006",
+        "score": 80.0,
+        "pass_mark": 50,
+        "grade": "A",
+        "passed": true
     }
 ]

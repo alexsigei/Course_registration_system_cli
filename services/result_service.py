@@ -1,5 +1,6 @@
 from models.result import Result
 from models.enrollment import Enrollment
+from models.module import Module
 from storage.json_storage import JSONStorage
 
 
@@ -9,6 +10,7 @@ class ResultService:
 
         self.results_file = "results.json"
         self.enrollments_file = "enrollments.json"
+        self.modules_file = "modules.json"
 
     def _load_results(self):
         data = self.storage.load(self.results_file)
@@ -42,10 +44,25 @@ class ResultService:
 
         self.storage.save(self.enrollments_file, data)
 
+    def _load_modules(self):
+        data = self.storage.load(self.modules_file)
+
+        return [
+            Module.from_dict(module)
+            for module in data
+        ]
+
+    def get_active_enrollments(self):
+        enrollments = self._load_enrollments()
+
+        return [
+            enrollment
+            for enrollment in enrollments
+            if enrollment.status == "active"
+        ]
+
     def enter_result(
         self,
-        student_id,
-        module_id,
         enrollment_id,
         score
     ):
@@ -56,6 +73,7 @@ class ResultService:
 
         enrollments = self._load_enrollments()
         results = self._load_results()
+        modules = self._load_modules()
 
         enrollment = None
 
@@ -65,21 +83,25 @@ class ResultService:
                 break
 
         if enrollment is None:
-            raise ValueError("Enrollment not found.")
-
-        if enrollment.student_id != student_id:
             raise ValueError(
-                "Enrollment does not belong to this student."
-            )
-
-        if enrollment.module_id != module_id:
-            raise ValueError(
-                "Enrollment does not belong to this module."
+                "Enrollment not found."
             )
 
         if enrollment.status != "active":
             raise ValueError(
                 "A result can only be entered for an active enrollment."
+            )
+
+        module = None
+
+        for item in modules:
+            if item.module_id == enrollment.module_id:
+                module = item
+                break
+
+        if module is None:
+            raise ValueError(
+                "Module associated with this enrollment was not found."
             )
 
         for result in results:
@@ -92,10 +114,11 @@ class ResultService:
 
         result = Result(
             result_id=result_id,
-            student_id=student_id,
-            module_id=module_id,
-            enrollment_id=enrollment_id,
-            score=score
+            student_id=enrollment.student_id,
+            module_id=enrollment.module_id,
+            enrollment_id=enrollment.enrollment_id,
+            score=score,
+            pass_mark=module.pass_mark
         )
 
         if result.passed:
