@@ -306,6 +306,8 @@ def show_my_enrollments(user):
             "\n[yellow]You have no enrollments.[/yellow]"
         )
         return
+    # Retrieve all results for this student once, then match each result
+    # to its corresponding enrollment using enrollment_id.
 
     results = result_service.get_student_results(
         user.student_id
@@ -321,6 +323,8 @@ def show_my_enrollments(user):
     table.add_column("Grade")
 
     for enrollment in student_enrollments:
+        # A student may have an enrollment that has not been graded yet,
+        # so display '-' until a matching result exists.
 
         score = "-"
         grade = "-"
@@ -370,6 +374,7 @@ def show_progress(user):
     passed_count = 0
 
     for item in progress:
+        # Build a progression table and count modules that have been passed.
 
         score = (
             str(item["score"])
@@ -437,6 +442,8 @@ def repeat_failed_module(user):
     )
 
     table = Table()
+    # Show the previous score and grade so the student can identify
+    # which failed module needs to be repeated.
 
     table.add_column("No.")
     table.add_column("Module")
@@ -484,6 +491,7 @@ def repeat_failed_module(user):
     ]
 
     module_id = selected_module["module_id"]
+    # Find cohorts that are available for a repeat attempt.
 
     # Find cohorts available for repeating
     cohorts = progression_service.get_repeat_cohorts(
@@ -555,6 +563,8 @@ def repeat_failed_module(user):
 
     # Create repeat enrollment
     try:
+         # Create a new active enrollment for the repeat attempt.
+        # The original failed enrollment/result is preserved as academic history.
         enrollment = progression_service.repeat_module(
             student_id=user.student_id,
             module_id=module_id,
