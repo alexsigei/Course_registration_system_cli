@@ -1,0 +1,51 @@
+[
+    {
+        "enrollment_id": "ENR001",
+        "student_id": "STU001",
+        "module_id": "MOD001",
+        "cohort_id": "COH001",
+        "status": "completed"
+    },
+    {
+        "enrollment_id": "ENR002",
+        "student_id": "STU002",
+        "module_id": "MOD001",
+        "cohort_id": "COH001",
+        "status": "failed"
+    },
+    {
+        "enrollment_id": "ENR003",
+        "student_id": "STU003",
+        "module_id": "MOD001",
+        "cohort_id": "COH001",
+        "status": "active"
+    },
+    {
+        "enrollment_id": "ENR004",
+        "student_id": "STU001",
+        "module_id": "MOD001",
+        "cohort_id": "COH001",
+        "status": "completed"
+    },
+    {
+        "enrollment_id": "ENR005",
+        "student_id": "STU002",
+        "module_id": "MOD002",
+        "cohort_id": "COH003",
+        "status": "failed"
+    },
+    {
+        "enrollment_id": "ENR006",
+        "student_id": "STU002",
+        "module_id": "MOD002",
+        "cohort_id": "COH006",
+        "status": "completed"
+    },
+    {
+        "enrollment_id": "ENR007",
+        "student_id": "STU002",
+        "module_id": "MOD001",
+        "cohort_id": "COH002",
+        "status": "completed"
+    }
+]

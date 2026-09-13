@@ -1,0 +1,30 @@
+[
+    {
+        "module_id": "MOD001",
+        "course_id": "CS001",
+        "name": "Python Programming",
+        "pass_mark": 50,
+        "sequence": 1
+    },
+    {
+        "module_id": "MOD002",
+        "course_id": "CS001",
+        "name": "Data Structures and Algorithms",
+        "pass_mark": 50,
+        "sequence": 2
+    },
+    {
+        "module_id": "MOD003",
+        "course_id": "CS001",
+        "name": "Database Systems",
+        "pass_mark": 50,
+        "sequence": 3
+    },
+    {
+        "module_id": "MOD004",
+        "course_id": "CS002",
+        "name": "Networking Fundamentals",
+        "pass_mark": 50,
+        "sequence": 1
+    }
+]

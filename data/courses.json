@@ -1,0 +1,20 @@
+[
+    {
+        "course_id": "CS001",
+        "name": "Computer Science",
+        "description": "A foundational computer science programme.",
+        "module_ids": [
+            "MOD001",
+            "MOD002",
+            "MOD003"
+        ]
+    },
+    {
+        "course_id": "CS002",
+        "name": "Information Technology",
+        "description": "An information technology programme.",
+        "module_ids": [
+            "MOD004"
+        ]
+    }
+]

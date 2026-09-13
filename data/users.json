@@ -1,0 +1,41 @@
+[
+    {
+        "user_id": "USR001",
+        "name": "Alex",
+        "email": "alex@example.com",
+        "role": "student",
+        "salt": "ff4d8a50ba00933f03e855c30fb92a68",
+        "password_hash": "dfc2b40792f1dd0499ebf69173f8058ff3c81f27aedee8091cb79ccd341d210f",
+        "student_id": "STU001",
+        "course_id": "CS001"
+    },
+    {
+        "user_id": "USR002",
+        "name": "Martin",
+        "email": "martin@example.com",
+        "role": "student",
+        "salt": "19f21da35f8480e5d68c2309a2fac9d6",
+        "password_hash": "5da47dca8d334d4215a79d9d9b58142d55f271af1cdad93d9417f31d9a82ad5e",
+        "student_id": "STU002",
+        "course_id": "CS001"
+    },
+    {
+        "user_id": "USR003",
+        "name": "System Administrator",
+        "email": "admin@example.com",
+        "role": "admin",
+        "salt": "4dbda1500d004e1155d76e1576ce857e",
+        "password_hash": "f34e44649703b949888c86c580cd91d735c4b31e6fc883e70891865a3b2de5d8",
+        "admin_id": "ADM001"
+    },
+    {
+        "user_id": "USR004",
+        "name": "Peter",
+        "email": "peter@example.com",
+        "role": "student",
+        "salt": "61681fa0f16cec583f22cadf8a1ff410",
+        "password_hash": "0d15b255462a8ad1d9f5aef02bd67fc0eff6c74363d8dde19a74a2648db2a2d2",
+        "student_id": "STU003",
+        "course_id": "CS001"
+    }
+]

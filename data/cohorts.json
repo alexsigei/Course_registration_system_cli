@@ -1,0 +1,52 @@
+[
+    {
+        "cohort_id": "COH001",
+        "module_id": "MOD001",
+        "name": "Python Mon/Tue Cohort",
+        "capacity": 2,
+        "student_ids": [
+            "STU001"
+        ]
+    },
+    {
+        "cohort_id": "COH002",
+        "module_id": "MOD001",
+        "name": "Python Wen/Fri Cohort",
+        "capacity": 3,
+        "student_ids": [
+            "STU002"
+        ]
+    },
+    {
+        "cohort_id": "COH003",
+        "module_id": "MOD002",
+        "name": "DSA Mon/Tue Cohort",
+        "capacity": 2,
+        "student_ids": [
+            "STU002"
+        ]
+    },
+    {
+        "cohort_id": "COH004",
+        "module_id": "MOD003",
+        "name": "Database Wen/Fri Cohort",
+        "capacity": 3,
+        "student_ids": []
+    },
+    {
+        "cohort_id": "COH005",
+        "module_id": "MOD004",
+        "name": "Networking Mon/Tue Cohort",
+        "capacity": 4,
+        "student_ids": []
+    },
+    {
+        "cohort_id": "COH006",
+        "module_id": "MOD002",
+        "name": "DSA Wen/Fri Cohort",
+        "capacity": 5,
+        "student_ids": [
+            "STU002"
+        ]
+    }
+]
