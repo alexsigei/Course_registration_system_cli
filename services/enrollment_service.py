@@ -12,23 +12,14 @@ class EnrollmentService:
 
     def _load_cohorts(self):
         data = self.storage.load(self.cohorts_file)
-
-        return [
-            Cohort.from_dict(cohort)
-            for cohort in data
-        ]
+        return [Cohort.from_dict(cohort) for cohort in data]
 
     def _save_cohorts(self, cohorts):
-        data = [
-            cohort.to_dict()
-            for cohort in cohorts
-        ]
-
+        data = [cohort.to_dict() for cohort in cohorts]
         self.storage.save(self.cohorts_file, data)
 
     def _load_enrollments(self):
         data = self.storage.load(self.enrollments_file)
-
         return [
             Enrollment.from_dict(enrollment)
             for enrollment in data
@@ -40,9 +31,17 @@ class EnrollmentService:
             for enrollment in enrollments
         ]
 
-        self.storage.save(self.enrollments_file, data)
+        self.storage.save(
+            self.enrollments_file,
+            data
+        )
 
-    def enroll_student(self, student_id, module_id, cohort_id):
+    def enroll_student(
+        self,
+        student_id,
+        module_id,
+        cohort_id
+    ):
         cohorts = self._load_cohorts()
         enrollments = self._load_enrollments()
 
@@ -105,4 +104,13 @@ class EnrollmentService:
             cohort
             for cohort in cohorts
             if cohort.module_id == module_id
+        ]
+
+    def get_student_enrollments(self, student_id):
+        enrollments = self._load_enrollments()
+
+        return [
+            enrollment
+            for enrollment in enrollments
+            if enrollment.student_id == student_id
         ]

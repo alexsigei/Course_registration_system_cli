@@ -140,13 +140,11 @@ def enroll_in_module(user):
 def show_my_enrollments(user):
     enrollment_service = EnrollmentService()
 
-    enrollments = enrollment_service._load_enrollments()
-
-    student_enrollments = [
-        enrollment
-        for enrollment in enrollments
-        if enrollment.student_id == user.student_id
-    ]
+    student_enrollments = (
+        enrollment_service.get_student_enrollments(
+            user.student_id
+        )
+    )
 
     if not student_enrollments:
         console.print(

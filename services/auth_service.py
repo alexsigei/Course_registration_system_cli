@@ -4,6 +4,11 @@ from models.admin import Admin
 from storage.json_storage import JSONStorage
 from utils.hashing import hash_password, verify_password
 from utils.decorators import login_required, role_required
+from utils.validators import (
+    validate_email,
+    validate_name,
+    validate_password
+)
 
 
 class AuthService:
@@ -36,6 +41,10 @@ class AuthService:
         return f"ADM{admin_count + 1:03d}"
 
     def register_student(self, name, email, password):
+        name = validate_name(name)
+        email = validate_email(email)
+        password = validate_password(password)
+
         users = self._load_users()
 
         for user_data in users:
@@ -65,6 +74,10 @@ class AuthService:
 
     @role_required("admin")
     def create_admin(self, name, email, password):
+        name = validate_name(name)
+        email = validate_email(email)
+        password = validate_password(password)
+        
         users = self._load_users()
 
         for user_data in users:
