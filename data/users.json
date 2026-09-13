@@ -37,5 +37,15 @@
         "password_hash": "0d15b255462a8ad1d9f5aef02bd67fc0eff6c74363d8dde19a74a2648db2a2d2",
         "student_id": "STU003",
         "course_id": "CS001"
+    },
+    {
+        "user_id": "USR005",
+        "name": "Brenda",
+        "email": "brenda@example.com",
+        "role": "student",
+        "salt": "4ad1dd5bd0d464557bbb308b15cf3921",
+        "password_hash": "27aa93d57da5d1924825b29a0ea01faeb05d95a6493856698f7bab3aec6aca77",
+        "student_id": "STU004",
+        "course_id": "CS001"
     }
 ]

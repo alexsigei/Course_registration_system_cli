@@ -6,7 +6,9 @@
         "capacity": 2,
         "student_ids": [
             "STU001"
-        ]
+        ],
+        "start_date": null,
+        "end_date": null
     },
     {
         "cohort_id": "COH002",
@@ -15,7 +17,9 @@
         "capacity": 3,
         "student_ids": [
             "STU002"
-        ]
+        ],
+        "start_date": null,
+        "end_date": null
     },
     {
         "cohort_id": "COH003",
@@ -24,21 +28,27 @@
         "capacity": 2,
         "student_ids": [
             "STU002"
-        ]
+        ],
+        "start_date": null,
+        "end_date": null
     },
     {
         "cohort_id": "COH004",
         "module_id": "MOD003",
         "name": "Database Wen/Fri Cohort",
         "capacity": 3,
-        "student_ids": []
+        "student_ids": [],
+        "start_date": null,
+        "end_date": null
     },
     {
         "cohort_id": "COH005",
         "module_id": "MOD004",
         "name": "Networking Mon/Tue Cohort",
         "capacity": 4,
-        "student_ids": []
+        "student_ids": [],
+        "start_date": null,
+        "end_date": null
     },
     {
         "cohort_id": "COH006",
@@ -47,6 +57,19 @@
         "capacity": 5,
         "student_ids": [
             "STU002"
-        ]
+        ],
+        "start_date": null,
+        "end_date": null
+    },
+    {
+        "cohort_id": "COH007",
+        "module_id": "MOD001",
+        "name": "Python Mon/Tue Cohort",
+        "capacity": 8,
+        "student_ids": [
+            "STU004"
+        ],
+        "start_date": "2026-11-04",
+        "end_date": "2027-06-29"
     }
 ]

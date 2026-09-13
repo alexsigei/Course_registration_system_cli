@@ -48,8 +48,8 @@ def browse_courses():
 
     for course in courses:
         table.add_row(
-            course["course_id"],
-            course["name"]
+            course.course_id,
+            course.name
         )
 
     console.print()
