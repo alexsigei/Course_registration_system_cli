@@ -26,5 +26,12 @@
         "name": "Database Wen/Fri Cohort",
         "capacity": 3,
         "student_ids": []
+    },
+    {
+        "cohort_id": "COH005",
+        "module_id": "MOD004",
+        "name": "Networking Mon/Tue Cohort",
+        "capacity": 4,
+        "student_ids": []
     }
 ]

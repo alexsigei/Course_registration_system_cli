@@ -2,6 +2,7 @@ from rich.console import Console
 from rich.table import Table
 
 from services.course_service import CourseService
+from services.cohort_service import CohortService
 
 
 console = Console()
@@ -141,6 +142,99 @@ def manage_courses():
             )
 
 
+def view_cohorts():
+    cohort_service = CohortService()
+
+    cohorts = cohort_service.get_cohorts()
+
+    if not cohorts:
+        console.print(
+            "\n[yellow]No cohorts available.[/yellow]"
+        )
+        return
+
+    table = Table(title="Cohorts")
+
+    table.add_column("ID")
+    table.add_column("Module")
+    table.add_column("Cohort")
+    table.add_column("Capacity")
+    table.add_column("Seats Available")
+    table.add_column("Status")
+
+    for cohort in cohorts:
+        status = "FULL" if cohort.is_full else "AVAILABLE"
+
+        table.add_row(
+            cohort.cohort_id,
+            cohort.module_id,
+            cohort.name,
+            str(cohort.capacity),
+            str(cohort.seats_available),
+            status
+        )
+
+    console.print()
+    console.print(table)
+
+
+def add_cohort():
+    cohort_service = CohortService()
+
+    console.print("\n[bold cyan]Add Cohort[/bold cyan]")
+
+    cohort_id = console.input("Cohort ID: ")
+    module_id = console.input("Module ID: ")
+    name = console.input("Cohort name: ")
+    capacity_input = console.input("Capacity: ")
+
+    try:
+        capacity = int(capacity_input)
+
+        cohort = cohort_service.add_cohort(
+            cohort_id=cohort_id,
+            module_id=module_id,
+            name=name,
+            capacity=capacity
+        )
+
+        console.print(
+            "\n[green]Cohort created successfully.[/green]"
+        )
+
+        console.print(cohort)
+
+    except ValueError as error:
+        console.print(
+            f"\n[red]Failed to create cohort: {error}[/red]"
+        )
+
+
+def manage_cohorts():
+    while True:
+        console.print("\n[bold cyan]Cohort Management[/bold cyan]")
+
+        console.print("1. View Cohorts")
+        console.print("2. Add Cohort")
+        console.print("3. Back")
+
+        choice = console.input("\nChoose an option: ")
+
+        if choice == "1":
+            view_cohorts()
+
+        elif choice == "2":
+            add_cohort()
+
+        elif choice == "3":
+            break
+
+        else:
+            console.print(
+                "\n[red]Invalid choice.[/red]"
+            )
+
+
 def show_admin_menu(user):
     while True:
         console.print("\n[bold cyan]Admin Menu[/bold cyan]")
@@ -162,9 +256,7 @@ def show_admin_menu(user):
             manage_courses()
 
         elif choice == "3":
-            console.print(
-                "\nCohort management will be implemented next."
-            )
+            manage_cohorts()
 
         elif choice == "4":
             console.print(
