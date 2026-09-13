@@ -97,3 +97,12 @@ class EnrollmentService:
                 return cohort.seats_available
 
         raise ValueError("Cohort not found.")
+
+    def get_cohorts_for_module(self, module_id):
+        cohorts = self._load_cohorts()
+
+        return [
+            cohort
+            for cohort in cohorts
+            if cohort.module_id == module_id
+        ]

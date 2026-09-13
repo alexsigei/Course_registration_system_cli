@@ -4,14 +4,14 @@
         "student_id": "STU001",
         "module_id": "MOD001",
         "cohort_id": "COH001",
-        "status": "active"
+        "status": "completed"
     },
     {
         "enrollment_id": "ENR002",
         "student_id": "STU002",
         "module_id": "MOD001",
         "cohort_id": "COH001",
-        "status": "active"
+        "status": "failed"
     },
     {
         "enrollment_id": "ENR003",

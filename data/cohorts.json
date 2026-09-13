@@ -2,8 +2,29 @@
     {
         "cohort_id": "COH001",
         "module_id": "MOD001",
-        "name": "Python Cohort A",
+        "name": "Python Mon/Tue Cohort",
         "capacity": 2,
+        "student_ids": []
+    },
+    {
+        "cohort_id": "COH002",
+        "module_id": "MOD001",
+        "name": "Python Wen/Fri Cohort",
+        "capacity": 3,
+        "student_ids": []
+    },
+    {
+        "cohort_id": "COH003",
+        "module_id": "MOD002",
+        "name": "DSA Mon/Tue Cohort",
+        "capacity": 2,
+        "student_ids": []
+    },
+    {
+        "cohort_id": "COH004",
+        "module_id": "MOD003",
+        "name": "Database Wen/Fri Cohort",
+        "capacity": 3,
         "student_ids": []
     }
 ]
