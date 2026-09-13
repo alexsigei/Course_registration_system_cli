@@ -47,5 +47,12 @@
         "module_id": "MOD001",
         "cohort_id": "COH002",
         "status": "completed"
+    },
+    {
+        "enrollment_id": "ENR008",
+        "student_id": "STU004",
+        "module_id": "MOD001",
+        "cohort_id": "COH007",
+        "status": "completed"
     }
 ]
