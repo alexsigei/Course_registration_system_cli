@@ -130,3 +130,12 @@ class ResultService:
         self._save_enrollments(enrollments)
 
         return result
+
+    def get_student_results(self, student_id):
+        results = self._load_results()
+
+        return [
+            result
+            for result in results
+            if result.student_id == student_id
+        ]

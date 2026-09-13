@@ -14,10 +14,18 @@ def get_login_details():
 
 
 def get_registration_details():
-    console.print("\n[bold cyan]Create Account[/bold cyan]")
+    console.print(
+        "\n[bold cyan]Create Account[/bold cyan]"
+    )
 
     name = console.input("Name: ")
     email = console.input("Email: ")
     password = console.input("Password: ")
+    course_id = console.input("Course ID: ")
 
-    return name, email, password
+    return (
+        name,
+        email,
+        password,
+        course_id
+    )

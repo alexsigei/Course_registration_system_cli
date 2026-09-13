@@ -13,7 +13,6 @@ class StudentService:
 
     def get_students(self):
         users = self._load_users()
-
         students = []
 
         for user_data in users:

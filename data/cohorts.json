@@ -13,7 +13,9 @@
         "module_id": "MOD001",
         "name": "Python Wen/Fri Cohort",
         "capacity": 3,
-        "student_ids": []
+        "student_ids": [
+            "STU002"
+        ]
     },
     {
         "cohort_id": "COH003",

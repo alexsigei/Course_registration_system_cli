@@ -1,6 +1,7 @@
 from services.progression_service import ProgressionService
 from services.result_service import ResultService
 from storage.json_storage import JSONStorage
+from datetime import date, timedelta
 
 
 def setup_progression_data(tmp_path):
@@ -33,7 +34,13 @@ def setup_progression_data(tmp_path):
                 "module_id": "MOD001",
                 "name": "Python Afternoon",
                 "capacity": 2,
-                "student_ids": []
+                "student_ids": [],
+                "start_date": (
+                    date.today() + timedelta(days=7)
+                ).isoformat(),
+                "end_date": (
+                    date.today() + timedelta(days=37)
+                ).isoformat()
             }
         ]
     )
@@ -204,3 +211,133 @@ def test_repeat_can_be_completed(tmp_path):
 
     assert original["status"] == "failed"
     assert repeat["status"] == "completed"
+
+
+def test_first_module_is_available_when_not_started(
+    tmp_path
+):
+    storage = setup_progression_data(tmp_path)
+
+    storage.save("enrollments.json", [])
+    storage.save("results.json", [])
+
+    progression = ProgressionService(storage)
+
+    progress = progression.get_student_progress(
+        "STU001"
+    )
+
+    assert progress[0]["status"] == "AVAILABLE"
+
+
+def test_next_module_is_locked_until_previous_is_passed(
+    tmp_path
+):
+    storage = JSONStorage(tmp_path)
+
+    storage.save(
+        "modules.json",
+        [
+            {
+                "module_id": "MOD001",
+                "course_id": "CS001",
+                "name": "Python Programming",
+                "pass_mark": 50,
+                "sequence": 1
+            },
+            {
+                "module_id": "MOD002",
+                "course_id": "CS001",
+                "name": "Data Structures",
+                "pass_mark": 50,
+                "sequence": 2
+            }
+        ]
+    )
+
+    storage.save("cohorts.json", [])
+
+    storage.save(
+        "enrollments.json",
+        []
+    )
+
+    storage.save(
+        "results.json",
+        []
+    )
+
+    progression = ProgressionService(storage)
+
+    progress = progression.get_student_progress(
+        "STU001"
+    )
+
+    assert progress[0]["status"] == "AVAILABLE"
+    assert progress[1]["status"] == "LOCKED"
+
+
+def test_next_module_becomes_available_after_previous_passes(
+    tmp_path
+):
+    storage = JSONStorage(tmp_path)
+
+    storage.save(
+        "modules.json",
+        [
+            {
+                "module_id": "MOD001",
+                "course_id": "CS001",
+                "name": "Python Programming",
+                "pass_mark": 50,
+                "sequence": 1
+            },
+            {
+                "module_id": "MOD002",
+                "course_id": "CS001",
+                "name": "Data Structures",
+                "pass_mark": 50,
+                "sequence": 2
+            }
+        ]
+    )
+
+    storage.save("cohorts.json", [])
+
+    storage.save(
+        "enrollments.json",
+        [
+            {
+                "enrollment_id": "ENR001",
+                "student_id": "STU001",
+                "module_id": "MOD001",
+                "cohort_id": "COH001",
+                "status": "completed"
+            }
+        ]
+    )
+
+    storage.save(
+        "results.json",
+        [
+            {
+                "result_id": "RES001",
+                "student_id": "STU001",
+                "module_id": "MOD001",
+                "enrollment_id": "ENR001",
+                "score": 75,
+                "pass_mark": 50,
+                "grade": "A",
+                "passed": True
+            }
+        ]
+    )
+
+    progression = ProgressionService(storage)
+
+    progress = progression.get_student_progress(
+        "STU001"
+    )
+
+    assert progress[0]["status"] == "PASSED"
+    assert progress[1]["status"] == "AVAILABLE"

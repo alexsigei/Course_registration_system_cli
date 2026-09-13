@@ -9,6 +9,7 @@ from utils.validators import (
     validate_name,
     validate_password
 )
+from services.course_service import CourseService
 
 
 class AuthService:
@@ -17,6 +18,8 @@ class AuthService:
 
         self.users_file = "users.json"
         self.current_user = None
+
+        self.course_service = CourseService(storage=self.storage)
 
     def _load_users(self):
         return self.storage.load(self.users_file)
@@ -40,10 +43,24 @@ class AuthService:
 
         return f"ADM{admin_count + 1:03d}"
 
-    def register_student(self, name, email, password):
+    def register_student(
+        self,
+        name,
+        email,
+        password,
+        course_id=None
+    ):
         name = validate_name(name)
         email = validate_email(email)
         password = validate_password(password)
+
+        if course_id is not None:
+            course_id = course_id.strip()
+
+            if not course_id:
+                raise ValueError("Course ID cannot be empty.")
+
+            self.course_service.get_course(course_id)
 
         users = self._load_users()
 
@@ -62,6 +79,7 @@ class AuthService:
             name=name,
             email=email,
             student_id=student_id,
+            course_id=course_id,
             user_id=user_id,
             salt=salt,
             password_hash=password_hash
@@ -77,7 +95,7 @@ class AuthService:
         name = validate_name(name)
         email = validate_email(email)
         password = validate_password(password)
-        
+
         users = self._load_users()
 
         for user_data in users:

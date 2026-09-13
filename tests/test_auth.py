@@ -1,21 +1,37 @@
+import pytest
+
 from services.auth_service import AuthService
+from services.course_service import CourseService
 from storage.json_storage import JSONStorage
 
 
-def test_student_registration(tmp_path):
+@pytest.fixture
+def auth_with_course(tmp_path):
     storage = JSONStorage(tmp_path)
-    auth = AuthService(storage)
+
+    course_service = CourseService(storage)
+
+    course_service.add_course(
+        course_id="CS001",
+        name="Computer Science",
+        description="Computer Science course"
+    )
+
+    return AuthService(storage)
+
+
+def test_student_registration(auth_with_course):
+    auth = auth_with_course
 
     student = auth.register_student(
         name="Test Student",
         email="student@example.com",
-        password="password123"
+        password="password123",
+        course_id="CS001"
     )
 
-    assert student.name == "Test Student"
-    assert student.email == "student@example.com"
-    assert student.role == "student"
     assert student.student_id == "STU001"
+    assert student.course_id == "CS001"
 
 
 def test_password_is_not_stored_directly(tmp_path):

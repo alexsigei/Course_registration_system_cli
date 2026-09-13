@@ -62,7 +62,7 @@ def interactive_mode():
                 )
 
         elif choice == "2":
-            name, email, password = (
+            name, email, password, course_id = (
                 get_registration_details()
             )
 
@@ -70,7 +70,8 @@ def interactive_mode():
                 user = auth.register_student(
                     name=name,
                     email=email,
-                    password=password
+                    password=password,
+                    course_id=course_id
                 )
 
                 console.print(
@@ -83,6 +84,10 @@ def interactive_mode():
 
                 console.print(
                     f"Student ID: {user.student_id}"
+                )
+
+                console.print(
+                    f"Course: {user.course_id}"
                 )
 
             except ValueError as error:

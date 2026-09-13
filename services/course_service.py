@@ -1,6 +1,7 @@
 from models.course import Course
 from models.module import Module
 from storage.json_storage import JSONStorage
+from utils.validators import validate_pass_mark
 
 
 class CourseService:
@@ -11,7 +12,9 @@ class CourseService:
         self.modules_file = "modules.json"
 
     def _load_courses(self):
-        data = self.storage.load(self.courses_file)
+        data = self.storage.load(
+            self.courses_file
+        )
 
         return [
             Course.from_dict(course)
@@ -24,10 +27,15 @@ class CourseService:
             for course in courses
         ]
 
-        self.storage.save(self.courses_file, data)
+        self.storage.save(
+            self.courses_file,
+            data
+        )
 
     def _load_modules(self):
-        data = self.storage.load(self.modules_file)
+        data = self.storage.load(
+            self.modules_file
+        )
 
         return [
             Module.from_dict(module)
@@ -40,7 +48,10 @@ class CourseService:
             for module in modules
         ]
 
-        self.storage.save(self.modules_file, data)
+        self.storage.save(
+            self.modules_file,
+            data
+        )
 
     def get_courses(self):
         return self._load_courses()
@@ -68,15 +79,26 @@ class CourseService:
 
     def get_modules_for_course(self, course_id):
         course = self.get_course(course_id)
+
         modules = self._load_modules()
 
-        return [
+        course_modules = [
             module
             for module in modules
             if module.module_id in course.module_ids
         ]
 
-    def add_course(self, course_id, name, description=""):
+        return sorted(
+            course_modules,
+            key=lambda module: module.sequence
+        )
+
+    def add_course(
+        self,
+        course_id,
+        name,
+        description=""
+    ):
         courses = self._load_courses()
 
         for course in courses:
@@ -102,7 +124,8 @@ class CourseService:
         module_id,
         course_id,
         name,
-        pass_mark=50
+        pass_mark=50,
+        sequence=1
     ):
         courses = self._load_courses()
         modules = self._load_modules()
@@ -123,11 +146,31 @@ class CourseService:
         if course is None:
             raise ValueError("Course not found.")
 
+        pass_mark = validate_pass_mark(
+            pass_mark
+        )
+
+        if sequence <= 0:
+            raise ValueError(
+                "Module sequence must be greater than 0."
+            )
+
+        for module in modules:
+            if (
+                module.course_id == course_id
+                and module.sequence == sequence
+            ):
+                raise ValueError(
+                    "This sequence number is already "
+                    "used in this course."
+                )
+
         module = Module(
             module_id=module_id,
             course_id=course_id,
             name=name,
-            pass_mark=pass_mark
+            pass_mark=pass_mark,
+            sequence=sequence
         )
 
         modules.append(module)

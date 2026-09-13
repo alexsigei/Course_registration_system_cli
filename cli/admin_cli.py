@@ -77,14 +77,28 @@ def add_course():
 def add_module():
     course_service = CourseService()
 
-    console.print("\n[bold cyan]Add Module[/bold cyan]")
+    console.print(
+        "\n[bold cyan]Add Module[/bold cyan]"
+    )
 
-    module_id = console.input("Module ID: ")
-    course_id = console.input("Course ID: ")
-    name = console.input("Module name: ")
+    module_id = console.input(
+        "Module ID: "
+    )
+
+    course_id = console.input(
+        "Course ID: "
+    )
+
+    name = console.input(
+        "Module name: "
+    )
 
     pass_mark_input = console.input(
         "Pass mark (default 50): "
+    )
+
+    sequence_input = console.input(
+        "Module sequence number: "
     )
 
     try:
@@ -98,23 +112,31 @@ def add_module():
                 "Pass mark must be between 0 and 100."
             )
 
+        sequence = int(sequence_input)
+
+        if sequence <= 0:
+            raise ValueError(
+                "Module sequence must be greater than 0."
+            )
+
         module = course_service.add_module(
             module_id=module_id,
             course_id=course_id,
             name=name,
-            pass_mark=pass_mark
+            pass_mark=pass_mark,
+            sequence=sequence
         )
 
         console.print(
             "\n[green]Module created successfully.[/green]"
         )
+
         console.print(module)
 
     except ValueError as error:
         console.print(
             f"\n[red]Failed to create module: {error}[/red]"
         )
-
 
 def manage_courses():
     while True:
@@ -165,20 +187,22 @@ def view_cohorts():
     table.add_column("ID")
     table.add_column("Module")
     table.add_column("Cohort")
-    table.add_column("Capacity")
-    table.add_column("Seats Available")
+    table.add_column("Start")
+    table.add_column("End")
+    table.add_column("Progress")
+    table.add_column("Seats")
     table.add_column("Status")
 
     for cohort in cohorts:
-        status = "FULL" if cohort.is_full else "AVAILABLE"
-
         table.add_row(
             cohort.cohort_id,
             cohort.module_id,
             cohort.name,
-            str(cohort.capacity),
+            str(cohort.start_date),
+            str(cohort.end_date),
+            f"{cohort.progress_percentage}%",
             str(cohort.seats_available),
-            status
+            cohort.status
         )
 
     console.print()
@@ -188,26 +212,67 @@ def view_cohorts():
 def add_cohort():
     cohort_service = CohortService()
 
-    console.print("\n[bold cyan]Add Cohort[/bold cyan]")
+    console.print(
+        "\n[bold cyan]Add Cohort[/bold cyan]"
+    )
 
-    cohort_id = console.input("Cohort ID: ")
-    module_id = console.input("Module ID: ")
-    name = console.input("Cohort name: ")
-    capacity = console.input("Capacity: ")
+    cohort_id = console.input(
+        "Cohort ID: "
+    )
+
+    module_id = console.input(
+        "Module ID: "
+    )
+
+    name = console.input(
+        "Cohort name: "
+    )
+
+    capacity = console.input(
+        "Capacity: "
+    )
+
+    start_date = console.input(
+        "Start date (YYYY-MM-DD): "
+    )
+
+    end_date = console.input(
+        "End date (YYYY-MM-DD): "
+    )
 
     try:
         cohort = cohort_service.add_cohort(
             cohort_id=cohort_id,
             module_id=module_id,
             name=name,
-            capacity=capacity
+            capacity=capacity,
+            start_date=start_date,
+            end_date=end_date
         )
 
         console.print(
             "\n[green]Cohort created successfully.[/green]"
         )
 
-        console.print(cohort)
+        console.print(
+            f"ID: {cohort.cohort_id}"
+        )
+
+        console.print(
+            f"Module: {cohort.module_id}"
+        )
+
+        console.print(
+            f"Start: {cohort.start_date}"
+        )
+
+        console.print(
+            f"End: {cohort.end_date}"
+        )
+
+        console.print(
+            f"Status: {cohort.status}"
+        )
 
     except ValueError as error:
         console.print(

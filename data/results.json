@@ -48,5 +48,15 @@
         "pass_mark": 50,
         "grade": "A",
         "passed": true
+    },
+    {
+        "result_id": "RES006",
+        "student_id": "STU002",
+        "module_id": "MOD001",
+        "enrollment_id": "ENR007",
+        "score": 76.0,
+        "pass_mark": 50,
+        "grade": "A",
+        "passed": true
     }
 ]

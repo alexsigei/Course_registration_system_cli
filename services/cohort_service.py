@@ -24,10 +24,15 @@ class CohortService:
             for cohort in cohorts
         ]
 
-        self.storage.save(self.cohorts_file, data)
+        self.storage.save(
+            self.cohorts_file,
+            data
+        )
 
     def _load_modules(self):
-        return self.storage.load(self.modules_file)
+        return self.storage.load(
+            self.modules_file
+        )
 
     def get_cohorts(self):
         return self._load_cohorts()
@@ -55,19 +60,19 @@ class CohortService:
         cohort_id,
         module_id,
         name,
-        capacity
+        capacity,
+        start_date,
+        end_date
     ):
         cohorts = self._load_cohorts()
         modules = self._load_modules()
 
-        # Check for duplicate cohort ID
         for cohort in cohorts:
             if cohort.cohort_id == cohort_id:
                 raise ValueError(
                     "A cohort with this ID already exists."
                 )
 
-        # Check that the module exists
         module_exists = False
 
         for module in modules:
@@ -76,18 +81,27 @@ class CohortService:
                 break
 
         if not module_exists:
+            raise ValueError("Module not found.")
+
+        capacity = validate_capacity(capacity)
+
+        if not start_date or not end_date:
             raise ValueError(
-                "Module not found."
+                "Start date and end date are required."
             )
 
-        # Validate capacity
-        capacity = validate_capacity(capacity)
+        if start_date >= end_date:
+            raise ValueError(
+                "End date must be after start date."
+            )
 
         cohort = Cohort(
             cohort_id=cohort_id,
             module_id=module_id,
             name=name,
-            capacity=capacity
+            capacity=capacity,
+            start_date=start_date,
+            end_date=end_date
         )
 
         cohorts.append(cohort)
