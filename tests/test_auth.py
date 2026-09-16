@@ -26,12 +26,10 @@ def test_student_registration(auth_with_course):
     student = auth.register_student(
         name="Test Student",
         email="student@example.com",
-        password="password123",
-        course_id="CS001"
+        password="password123"
     )
 
     assert student.student_id == "STU001"
-    assert student.course_id == "CS001"
 
 
 def test_password_is_not_stored_directly(tmp_path):

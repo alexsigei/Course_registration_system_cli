@@ -370,9 +370,11 @@ class ProgressionService:
                 else:
                     status = "LOCKED"
 
+
             progress.append({
                 "module_id": module.module_id,
                 "module_name": module.name,
+                "course_id": module.course_id,
                 "sequence": module.sequence,
                 "status": status,
                 "score": score,

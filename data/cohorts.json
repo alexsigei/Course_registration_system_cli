@@ -71,5 +71,16 @@
         ],
         "start_date": "2026-11-04",
         "end_date": "2027-06-29"
+    },
+    {
+        "cohort_id": "COH008",
+        "module_id": "MOD004",
+        "name": "Networking Wed/Fri Cohort",
+        "capacity": 6,
+        "student_ids": [
+            "STU004"
+        ],
+        "start_date": "2026-10-05",
+        "end_date": "2027-02-26"
     }
 ]
