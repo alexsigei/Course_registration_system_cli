@@ -7,6 +7,7 @@ from storage.json_storage import JSONStorage
 
 class ProgressionService:
     def __init__(self, storage=None):
+        # Initialize storage and data files
         self.storage = storage or JSONStorage()
 
         self.cohorts_file = "cohorts.json"
@@ -16,6 +17,7 @@ class ProgressionService:
         self.courses_file = "courses.json"
 
     def _load_cohorts(self):
+        # Load cohort records
         data = self.storage.load(
             self.cohorts_file
         )
@@ -26,6 +28,7 @@ class ProgressionService:
         ]
 
     def _load_enrollments(self):
+        # Load enrollment records
         data = self.storage.load(
             self.enrollments_file
         )
@@ -36,6 +39,7 @@ class ProgressionService:
         ]
 
     def _save_enrollments(self, enrollments):
+        # Save enrollment records
         data = [
             enrollment.to_dict()
             for enrollment in enrollments
@@ -47,6 +51,7 @@ class ProgressionService:
         )
 
     def _load_results(self):
+        # Load student results
         data = self.storage.load(
             self.results_file
         )
@@ -57,6 +62,7 @@ class ProgressionService:
         ]
 
     def _load_modules(self):
+        # Load module records
         data = self.storage.load(
             self.modules_file
         )
@@ -67,11 +73,13 @@ class ProgressionService:
         ]
 
     def _load_courses(self):
+        # Load course records
         return self.storage.load(
             self.courses_file
         )
 
     def get_failed_modules(self, student_id):
+        # Find modules the student failed
         enrollments = self._load_enrollments()
         results = self._load_results()
 
@@ -106,6 +114,7 @@ class ProgressionService:
         student_id,
         module_id
     ):
+        # Find new cohorts for a repeated module
         cohorts = self._load_cohorts()
         enrollments = self._load_enrollments()
 
@@ -147,6 +156,7 @@ class ProgressionService:
         module_id,
         new_cohort_id
     ):
+        # Create enrollment for a repeated module
         cohorts = self._load_cohorts()
         enrollments = self._load_enrollments()
 
@@ -176,6 +186,7 @@ class ProgressionService:
                     enrollment.cohort_id
                 )
 
+        # Find the selected cohort
         cohort = None
 
         for item in cohorts:
@@ -195,6 +206,7 @@ class ProgressionService:
                 "to the selected module."
             )
 
+        # Prevent using the previous cohort
         if new_cohort_id in previous_cohort_ids:
             raise ValueError(
                 "Student must be assigned "
@@ -212,6 +224,7 @@ class ProgressionService:
                 "This cohort is full."
             )
 
+        # Add student to the new cohort
         cohort.add_student(student_id)
 
         enrollment_id = (
@@ -228,6 +241,7 @@ class ProgressionService:
 
         enrollments.append(enrollment)
 
+        # Save updated cohort data
         cohort_data = [
             cohort_item.to_dict()
             for cohort_item in cohorts
@@ -238,6 +252,7 @@ class ProgressionService:
             cohort_data
         )
 
+        # Save the new enrollment
         self._save_enrollments(
             enrollments
         )
@@ -249,6 +264,7 @@ class ProgressionService:
         Return the academic progression of a student.
         """
 
+        # Load data needed for progression
         enrollments = self._load_enrollments()
         results = self._load_results()
         modules = self._load_modules()
@@ -275,6 +291,7 @@ class ProgressionService:
             score = None
             grade = None
 
+            # Check the student's module results
             for enrollment in module_enrollments:
 
                 for result in results:
@@ -295,6 +312,7 @@ class ProgressionService:
                 if enrollment.status == "active":
                     active = True
 
+            # Determine the module status
             if passed:
                 status = "PASSED"
 
@@ -307,12 +325,14 @@ class ProgressionService:
             else:
                 previous_module_passed = False
 
+                # First module has no prerequisite
                 if module.sequence == 1:
                     previous_module_passed = True
 
                 else:
                     previous_module = None
 
+                    # Find the previous module
                     for item in modules:
                         if (
                             item.course_id == module.course_id
@@ -326,6 +346,7 @@ class ProgressionService:
                         previous_module_passed = True
 
                     else:
+                        # Check whether prerequisite was passed
                         for enrollment in student_enrollments:
                             if (
                                 enrollment.module_id
@@ -343,6 +364,7 @@ class ProgressionService:
                                 if previous_module_passed:
                                     break
 
+                # Unlock module when prerequisite is passed
                 if previous_module_passed:
                     status = "AVAILABLE"
                 else:
@@ -359,7 +381,7 @@ class ProgressionService:
                 "grade": grade
             })
 
-
+        # Return modules in sequence order
         return sorted(
             progress,
             key=lambda item: item["sequence"]
