@@ -5,6 +5,7 @@ from datetime import date, timedelta
 
 
 def setup_progression_data(tmp_path):
+    # Create test storage
     storage = JSONStorage(tmp_path)
 
     storage.save(
@@ -31,6 +32,7 @@ def setup_progression_data(tmp_path):
         ]
     )
 
+    # Create test cohorts
     storage.save(
         "cohorts.json",
         [
@@ -76,6 +78,7 @@ def setup_progression_data(tmp_path):
         ]
     )
 
+    # Create initial enrollment
     storage.save(
         "enrollments.json",
         [
@@ -98,6 +101,7 @@ def setup_progression_data(tmp_path):
 
 
 def test_failed_result_marks_enrollment_failed(tmp_path):
+    # Check that a failed result updates enrollment
     storage = setup_progression_data(tmp_path)
 
     result_service = ResultService(storage)
@@ -118,6 +122,7 @@ def test_failed_result_marks_enrollment_failed(tmp_path):
 def test_failed_module_appears_in_progression(
     tmp_path
 ):
+    # Check that failed modules appear in progression
     storage = setup_progression_data(tmp_path)
 
     result_service = ResultService(storage)
@@ -141,6 +146,7 @@ def test_failed_module_appears_in_progression(
 
 
 def test_repeat_requires_different_cohort(tmp_path):
+    # Check that repeat uses a different cohort
     storage = setup_progression_data(tmp_path)
 
     result_service = ResultService(storage)
@@ -163,6 +169,7 @@ def test_repeat_requires_different_cohort(tmp_path):
 
 
 def test_repeat_creates_new_enrollment(tmp_path):
+    # Check that repeating creates a new enrollment
     storage = setup_progression_data(tmp_path)
 
     result_service = ResultService(storage)
@@ -260,6 +267,7 @@ def test_repeat_moves_student_between_cohorts(
 def test_repeat_cannot_use_previous_cohort(
     tmp_path
 ):
+    # Check that the previous cohort cannot be reused
     storage = setup_progression_data(tmp_path)
 
     result_service = ResultService(storage)
@@ -289,6 +297,7 @@ def test_repeat_cannot_use_previous_cohort(
 
 
 def test_repeat_can_be_completed(tmp_path):
+    # Check that a repeated module can be passed
     storage = setup_progression_data(tmp_path)
 
     result_service = ResultService(storage)
@@ -328,6 +337,7 @@ def test_repeat_can_be_completed(tmp_path):
 def test_first_module_is_available_when_not_started(
     tmp_path
 ):
+    # Check that the first module is available
     storage = setup_progression_data(tmp_path)
 
     storage.save(
@@ -352,6 +362,7 @@ def test_first_module_is_available_when_not_started(
 def test_next_module_is_locked_until_previous_is_passed(
     tmp_path
 ):
+    # Check that progression follows module sequence
     storage = JSONStorage(tmp_path)
 
     storage.save(
@@ -395,6 +406,7 @@ def test_next_module_is_locked_until_previous_is_passed(
         "STU001"
     )
 
+    # MOD002 stays locked without MOD001
     assert progress[0]["status"] == "AVAILABLE"
     assert progress[1]["status"] == "LOCKED"
 
@@ -402,6 +414,7 @@ def test_next_module_is_locked_until_previous_is_passed(
 def test_next_module_becomes_available_after_previous_passes(
     tmp_path
 ):
+    # Check that passing unlocks the next module
     storage = JSONStorage(tmp_path)
 
     storage.save(
@@ -464,5 +477,6 @@ def test_next_module_becomes_available_after_previous_passes(
         "STU001"
     )
 
+    # MOD002 becomes available after MOD001 is passed
     assert progress[0]["status"] == "PASSED"
     assert progress[1]["status"] == "AVAILABLE"

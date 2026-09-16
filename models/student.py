@@ -11,6 +11,7 @@ class Student(User):
         salt=None,
         password_hash=None
     ):
+        # Initialize student as a user
         super().__init__(
             name=name,
             email=email,
@@ -20,9 +21,11 @@ class Student(User):
             password_hash=password_hash
         )
 
+        # Store student details
         self.student_id = student_id
 
     def to_dict(self):
+        # Convert student to dictionary
         data = super().to_dict()
 
         data["student_id"] = self.student_id
@@ -31,6 +34,7 @@ class Student(User):
 
     @classmethod
     def from_dict(cls, data):
+        # Create student from dictionary
         return cls(
             name=data["name"],
             email=data["email"],
@@ -41,6 +45,7 @@ class Student(User):
         )
 
     def __str__(self):
+        # Display student information
         return (
             f"Student: {self.name} "
             f"({self.student_id})"
