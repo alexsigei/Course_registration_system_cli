@@ -6,14 +6,17 @@ def setup_cohort_data(tmp_path):
     storage = JSONStorage(tmp_path)
 
     storage.save(
-        "modules.json",
+        "courses.json",
         [
             {
-                "module_id": "MOD001",
                 "course_id": "CS001",
-                "name": "Python Programming",
-                "pass_mark": 50,
-                "sequence": 1
+                "name": "Computer Science",
+                "description": "Computer Science course",
+                "module_ids": [
+                    "MOD001",
+                    "MOD002",
+                    "MOD003"
+                ]
             }
         ]
     )
@@ -33,28 +36,28 @@ def test_add_cohort(tmp_path):
 
     cohort = service.add_cohort(
         cohort_id="COH001",
-        module_id="MOD001",
-        name="Python Morning",
+        course_id="CS001",
+        name="SDF-FT18H",
         capacity=30,
         start_date="2026-10-01",
         end_date="2026-10-31"
     )
 
     assert cohort.cohort_id == "COH001"
-    assert cohort.module_id == "MOD001"
+    assert cohort.course_id == "CS001"
     assert cohort.capacity == 30
     assert cohort.seats_available == 30
 
 
-def test_multiple_cohorts_can_use_same_module(tmp_path):
+def test_multiple_cohorts_can_use_same_course(tmp_path):
     storage = setup_cohort_data(tmp_path)
 
     service = CohortService(storage)
 
     service.add_cohort(
         cohort_id="COH001",
-        module_id="MOD001",
-        name="Python Morning",
+        course_id="CS001",
+        name="SDF-FT18H",
         capacity=30,
         start_date="2026-10-01",
         end_date="2026-10-31"
@@ -62,14 +65,14 @@ def test_multiple_cohorts_can_use_same_module(tmp_path):
 
     service.add_cohort(
         cohort_id="COH002",
-        module_id="MOD001",
-        name="Python Evening",
+        course_id="CS001",
+        name="SDF-FT19H",
         capacity=30,
         start_date="2026-11-01",
         end_date="2026-11-30"
     )
 
-    cohorts = service.get_cohorts_for_module("MOD001")
+    cohorts = service.get_cohorts_for_course("CS001")
 
     assert len(cohorts) == 2
 
@@ -81,8 +84,8 @@ def test_duplicate_cohort_id_is_rejected(tmp_path):
 
     service.add_cohort(
         cohort_id="COH001",
-        module_id="MOD001",
-        name="Python Morning",
+        course_id="CS001",
+        name="SDF-FT18H",
         capacity=30,
         start_date="2026-10-01",
         end_date="2026-10-31"
@@ -91,8 +94,8 @@ def test_duplicate_cohort_id_is_rejected(tmp_path):
     try:
         service.add_cohort(
             cohort_id="COH001",
-            module_id="MOD001",
-            name="Python Evening",
+            course_id="CS001",
+            name="SDF-FT19H",
             capacity=30,
             start_date="2026-11-01",
             end_date="2026-11-30"
@@ -104,7 +107,7 @@ def test_duplicate_cohort_id_is_rejected(tmp_path):
         )
 
 
-def test_cohort_requires_existing_module(tmp_path):
+def test_cohort_requires_existing_course(tmp_path):
     storage = setup_cohort_data(tmp_path)
 
     service = CohortService(storage)
@@ -112,15 +115,15 @@ def test_cohort_requires_existing_module(tmp_path):
     try:
         service.add_cohort(
             cohort_id="COH001",
-            module_id="MOD999",
-            name="Unknown Module Cohort",
+            course_id="CS999",
+            name="Unknown Course Cohort",
             capacity=30,
             start_date="2026-10-01",
             end_date="2026-10-31"
         )
         assert False
     except ValueError as error:
-        assert str(error) == "Module not found."
+        assert str(error) == "Course not found."
 
 
 def test_cohort_rejects_invalid_dates(tmp_path):
@@ -131,7 +134,7 @@ def test_cohort_rejects_invalid_dates(tmp_path):
     try:
         service.add_cohort(
             cohort_id="COH001",
-            module_id="MOD001",
+            course_id="CS001",
             name="Invalid Cohort",
             capacity=30,
             start_date="2026-10-31",

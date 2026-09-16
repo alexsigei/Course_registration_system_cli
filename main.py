@@ -13,7 +13,7 @@ from cli.auth_cli import (
     get_login_details,
     get_registration_details
 )
-from cli.student_cli import show_student_menu
+from cli.student_cli import student_menu
 from cli.admin_cli import show_admin_menu
 
 
@@ -49,7 +49,7 @@ def interactive_mode():
                 )
 
                 if user.role == "student":
-                    show_student_menu(user)
+                    student_menu(user)
 
                 elif user.role == "admin":
                     show_admin_menu(user)

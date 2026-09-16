@@ -5,14 +5,14 @@ class Cohort:
     def __init__(
         self,
         cohort_id,
-        module_id,
+        course_id,
         name,
         capacity,
         start_date=None,
         end_date=None
     ):
         self.cohort_id = cohort_id
-        self.module_id = module_id
+        self.course_id = course_id
         self.name = name
         self.capacity = capacity
         self.student_ids = []
@@ -111,7 +111,7 @@ class Cohort:
     def to_dict(self):
         return {
             "cohort_id": self.cohort_id,
-            "module_id": self.module_id,
+            "course_id": self.course_id,
             "name": self.name,
             "capacity": self.capacity,
             "student_ids": self.student_ids,
@@ -123,7 +123,7 @@ class Cohort:
     def from_dict(cls, data):
         cohort = cls(
             cohort_id=data["cohort_id"],
-            module_id=data["module_id"],
+            course_id=data["course_id"],
             name=data["name"],
             capacity=data["capacity"],
             start_date=data.get("start_date"),

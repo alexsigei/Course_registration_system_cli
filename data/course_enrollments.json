@@ -3,30 +3,14 @@
         "enrollment_id": "CENR001",
         "student_id": "STU001",
         "course_id": "CS001",
+        "cohort_id": "COH002",
         "status": "active"
     },
     {
         "enrollment_id": "CENR002",
-        "student_id": "STU002",
-        "course_id": "CS001",
-        "status": "active"
-    },
-    {
-        "enrollment_id": "CENR003",
-        "student_id": "STU003",
-        "course_id": "CS001",
-        "status": "active"
-    },
-    {
-        "enrollment_id": "CENR004",
-        "student_id": "STU004",
-        "course_id": "CS001",
-        "status": "active"
-    },
-    {
-        "enrollment_id": "CENR005",
-        "student_id": "STU004",
+        "student_id": "STU001",
         "course_id": "CS002",
+        "cohort_id": "COH003",
         "status": "active"
     }
 ]
