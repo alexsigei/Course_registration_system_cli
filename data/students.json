@@ -1,12 +1,1 @@
-[
-    {
-        "student_id": "STU001",
-        "name": "Alex",
-        "email": "alex@example.com"
-    },
-    {
-        "student_id": "STU002",
-        "name": "John",
-        "email": "john@example.com"
-    }
-]
+[]

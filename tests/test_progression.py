@@ -15,7 +15,19 @@ def setup_progression_data(tmp_path):
                 "module_id": "MOD001",
                 "course_id": "CS001",
                 "name": "Python Programming",
-                "pass_mark": 50
+                "pass_mark": 50,
+                "sequence": 1
+            }
+        ]
+    )
+
+    storage.save(
+        "courses.json",
+        [
+            {
+                "course_id": "CS001",
+                "name": "Software Engineering",
+                "description": "Software Engineering course"
             }
         ]
     )
@@ -26,23 +38,42 @@ def setup_progression_data(tmp_path):
         [
             {
                 "cohort_id": "COH001",
-                "module_id": "MOD001",
+                "course_id": "CS001",
                 "name": "Python Morning",
                 "capacity": 2,
-                "student_ids": ["STU001"]
-            },
-            {
-                "cohort_id": "COH002",
-                "module_id": "MOD001",
-                "name": "Python Afternoon",
-                "capacity": 2,
-                "student_ids": [],
+                "student_ids": ["STU001"],
                 "start_date": (
                     date.today() + timedelta(days=7)
                 ).isoformat(),
                 "end_date": (
                     date.today() + timedelta(days=37)
                 ).isoformat()
+            },
+            {
+                "cohort_id": "COH002",
+                "course_id": "CS001",
+                "name": "Python Afternoon",
+                "capacity": 2,
+                "student_ids": [],
+                "start_date": (
+                    date.today() + timedelta(days=14)
+                ).isoformat(),
+                "end_date": (
+                    date.today() + timedelta(days=44)
+                ).isoformat()
+            }
+        ]
+    )
+
+    storage.save(
+        "course_enrollments.json",
+        [
+            {
+                "enrollment_id": "CENR001",
+                "student_id": "STU001",
+                "course_id": "CS001",
+                "cohort_id": "COH001",
+                "status": "active"
             }
         ]
     )
@@ -61,7 +92,10 @@ def setup_progression_data(tmp_path):
         ]
     )
 
-    storage.save("results.json", [])
+    storage.save(
+        "results.json",
+        []
+    )
 
     return storage
 
@@ -106,7 +140,9 @@ def test_failed_module_appears_in_progression(
 
     assert len(failed_modules) == 1
     assert failed_modules[0]["module_id"] == "MOD001"
+    assert failed_modules[0]["course_id"] == "CS001"
     assert failed_modules[0]["score"] == 42
+    assert failed_modules[0]["cohort_id"] == "COH001"
 
 
 def test_repeat_requires_different_cohort(tmp_path):
@@ -129,6 +165,7 @@ def test_repeat_requires_different_cohort(tmp_path):
 
     assert len(cohorts) == 1
     assert cohorts[0].cohort_id == "COH002"
+    assert cohorts[0].course_id == "CS001"
 
 
 def test_repeat_creates_new_enrollment(tmp_path):
@@ -157,6 +194,76 @@ def test_repeat_creates_new_enrollment(tmp_path):
     assert new_enrollment.status == "active"
 
 
+def test_repeat_updates_current_course_cohort(
+    tmp_path
+):
+    storage = setup_progression_data(tmp_path)
+
+    result_service = ResultService(storage)
+
+    result_service.enter_result(
+        enrollment_id="ENR001",
+        score=42
+    )
+
+    progression = ProgressionService(storage)
+
+    progression.repeat_module(
+        student_id="STU001",
+        module_id="MOD001",
+        new_cohort_id="COH002"
+    )
+
+    course_enrollments = storage.load(
+        "course_enrollments.json"
+    )
+
+    assert len(course_enrollments) == 1
+    assert course_enrollments[0]["student_id"] == "STU001"
+    assert course_enrollments[0]["course_id"] == "CS001"
+    assert course_enrollments[0]["cohort_id"] == "COH002"
+    assert course_enrollments[0]["status"] == "active"
+
+
+def test_repeat_moves_student_between_cohorts(
+    tmp_path
+):
+    storage = setup_progression_data(tmp_path)
+
+    result_service = ResultService(storage)
+
+    result_service.enter_result(
+        enrollment_id="ENR001",
+        score=42
+    )
+
+    progression = ProgressionService(storage)
+
+    progression.repeat_module(
+        student_id="STU001",
+        module_id="MOD001",
+        new_cohort_id="COH002"
+    )
+
+    cohorts = storage.load("cohorts.json")
+
+    old_cohort = None
+    new_cohort = None
+
+    for cohort in cohorts:
+        if cohort["cohort_id"] == "COH001":
+            old_cohort = cohort
+
+        if cohort["cohort_id"] == "COH002":
+            new_cohort = cohort
+
+    assert old_cohort is not None
+    assert new_cohort is not None
+
+    assert "STU001" not in old_cohort["student_ids"]
+    assert "STU001" in new_cohort["student_ids"]
+
+
 def test_repeat_cannot_use_previous_cohort(
     tmp_path
 ):
@@ -178,11 +285,14 @@ def test_repeat_cannot_use_previous_cohort(
             module_id="MOD001",
             new_cohort_id="COH001"
         )
+
         assert False
+
     except ValueError as error:
         assert (
             str(error)
-            == "Student must be assigned to a different cohort."
+            == "Student must be assigned "
+            "to a different cohort."
         )
 
 
@@ -213,7 +323,9 @@ def test_repeat_can_be_completed(tmp_path):
     assert result.passed is True
     assert result.grade == "A"
 
-    enrollments = storage.load("enrollments.json")
+    enrollments = storage.load(
+        "enrollments.json"
+    )
 
     original = enrollments[0]
     repeat = enrollments[1]
@@ -228,8 +340,15 @@ def test_first_module_is_available_when_not_started(
     # Check that the first module is available
     storage = setup_progression_data(tmp_path)
 
-    storage.save("enrollments.json", [])
-    storage.save("results.json", [])
+    storage.save(
+        "enrollments.json",
+        []
+    )
+
+    storage.save(
+        "results.json",
+        []
+    )
 
     progression = ProgressionService(storage)
 
@@ -266,7 +385,10 @@ def test_next_module_is_locked_until_previous_is_passed(
         ]
     )
 
-    storage.save("cohorts.json", [])
+    storage.save(
+        "cohorts.json",
+        []
+    )
 
     storage.save(
         "enrollments.json",
@@ -315,7 +437,10 @@ def test_next_module_becomes_available_after_previous_passes(
         ]
     )
 
-    storage.save("cohorts.json", [])
+    storage.save(
+        "cohorts.json",
+        []
+    )
 
     storage.save(
         "enrollments.json",

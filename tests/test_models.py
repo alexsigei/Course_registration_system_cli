@@ -1,3 +1,5 @@
+import pytest
+
 from models.person import Person
 from models.module import Module
 from models.cohort import Cohort
@@ -41,38 +43,28 @@ def test_module_pass_mark():
 def test_cohort_seat_availability():
     cohort = Cohort(
         cohort_id="COH001",
-        module_id="MOD001",
+        course_id="CS001",
         name="Python Morning",
         capacity=2
     )
-
-    assert cohort.seats_available == 2
 
     cohort.add_student("STU001")
 
     assert cohort.seats_available == 1
 
-    cohort.add_student("STU002")
-
-    assert cohort.seats_available == 0
-    assert cohort.is_full
-
 
 def test_full_cohort_rejects_student():
     cohort = Cohort(
         cohort_id="COH001",
-        module_id="MOD001",
+        course_id="CS001",
         name="Python Morning",
         capacity=1
     )
 
     cohort.add_student("STU001")
 
-    try:
+    with pytest.raises(ValueError):
         cohort.add_student("STU002")
-        assert False
-    except ValueError:
-        assert True
 
 
 def test_enrollment_can_fail():

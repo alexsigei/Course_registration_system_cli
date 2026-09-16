@@ -8,7 +8,7 @@ class CohortService:
         self.storage = storage or JSONStorage()
 
         self.cohorts_file = "cohorts.json"
-        self.modules_file = "modules.json"
+        self.courses_file = "courses.json"
 
     def _load_cohorts(self):
         data = self.storage.load(self.cohorts_file)
@@ -29,21 +29,21 @@ class CohortService:
             data
         )
 
-    def _load_modules(self):
+    def _load_courses(self):
         return self.storage.load(
-            self.modules_file
+            self.courses_file
         )
 
     def get_cohorts(self):
         return self._load_cohorts()
 
-    def get_cohorts_for_module(self, module_id):
+    def get_cohorts_for_course(self, course_id):
         cohorts = self._load_cohorts()
 
         return [
             cohort
             for cohort in cohorts
-            if cohort.module_id == module_id
+            if cohort.course_id == course_id
         ]
 
     def get_cohort(self, cohort_id):
@@ -58,14 +58,14 @@ class CohortService:
     def add_cohort(
         self,
         cohort_id,
-        module_id,
+        course_id,
         name,
         capacity,
         start_date,
         end_date
     ):
         cohorts = self._load_cohorts()
-        modules = self._load_modules()
+        courses = self._load_courses()
 
         for cohort in cohorts:
             if cohort.cohort_id == cohort_id:
@@ -73,15 +73,15 @@ class CohortService:
                     "A cohort with this ID already exists."
                 )
 
-        module_exists = False
+        course_exists = False
 
-        for module in modules:
-            if module["module_id"] == module_id:
-                module_exists = True
+        for course in courses:
+            if course["course_id"] == course_id:
+                course_exists = True
                 break
 
-        if not module_exists:
-            raise ValueError("Module not found.")
+        if not course_exists:
+            raise ValueError("Course not found.")
 
         capacity = validate_capacity(capacity)
 
@@ -97,7 +97,7 @@ class CohortService:
 
         cohort = Cohort(
             cohort_id=cohort_id,
-            module_id=module_id,
+            course_id=course_id,
             name=name,
             capacity=capacity,
             start_date=start_date,

@@ -185,7 +185,7 @@ def view_cohorts():
     table = Table(title="Cohorts")
 
     table.add_column("ID")
-    table.add_column("Module")
+    table.add_column("Course")
     table.add_column("Cohort")
     table.add_column("Start")
     table.add_column("End")
@@ -196,7 +196,7 @@ def view_cohorts():
     for cohort in cohorts:
         table.add_row(
             cohort.cohort_id,
-            cohort.module_id,
+            cohort.course_id,
             cohort.name,
             str(cohort.start_date),
             str(cohort.end_date),
@@ -220,8 +220,8 @@ def add_cohort():
         "Cohort ID: "
     )
 
-    module_id = console.input(
-        "Module ID: "
+    course_id = console.input(
+        "Course ID: "
     )
 
     name = console.input(
@@ -243,7 +243,7 @@ def add_cohort():
     try:
         cohort = cohort_service.add_cohort(
             cohort_id=cohort_id,
-            module_id=module_id,
+            course_id=course_id,
             name=name,
             capacity=capacity,
             start_date=start_date,
@@ -259,7 +259,7 @@ def add_cohort():
         )
 
         console.print(
-            f"Module: {cohort.module_id}"
+            f"Course: {cohort.course_id}"
         )
 
         console.print(

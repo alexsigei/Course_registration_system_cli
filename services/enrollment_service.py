@@ -1,44 +1,23 @@
-from models.cohort import Cohort
 from models.enrollment import Enrollment
 from models.module import Module
 from models.result import Result
+from models.course_enrollment import CourseEnrollment
 from storage.json_storage import JSONStorage
 
 
 class EnrollmentService:
     def __init__(self, storage=None):
-        # Initialize storage and data files
         self.storage = storage or JSONStorage()
 
-        self.cohorts_file = "cohorts.json"
         self.enrollments_file = "enrollments.json"
         self.modules_file = "modules.json"
         self.results_file = "results.json"
-
-    def _load_cohorts(self):
-        # Load cohort data
-        data = self.storage.load(self.cohorts_file)
-
-        return [
-            Cohort.from_dict(cohort)
-            for cohort in data
-        ]
-
-    def _save_cohorts(self, cohorts):
-        # Save cohort data
-        data = [
-            cohort.to_dict()
-            for cohort in cohorts
-        ]
-
-        self.storage.save(
-            self.cohorts_file,
-            data
-        )
+        self.course_enrollments_file = "course_enrollments.json"
 
     def _load_enrollments(self):
-        # Load enrollment data
-        data = self.storage.load(self.enrollments_file)
+        data = self.storage.load(
+            self.enrollments_file
+        )
 
         return [
             Enrollment.from_dict(enrollment)
@@ -46,7 +25,6 @@ class EnrollmentService:
         ]
 
     def _save_enrollments(self, enrollments):
-        # Save enrollment data
         data = [
             enrollment.to_dict()
             for enrollment in enrollments
@@ -58,8 +36,9 @@ class EnrollmentService:
         )
 
     def _load_modules(self):
-        # Load module data
-        data = self.storage.load(self.modules_file)
+        data = self.storage.load(
+            self.modules_file
+        )
 
         return [
             Module.from_dict(module)
@@ -67,12 +46,23 @@ class EnrollmentService:
         ]
 
     def _load_results(self):
-        # Load student results
-        data = self.storage.load(self.results_file)
+        data = self.storage.load(
+            self.results_file
+        )
 
         return [
             Result.from_dict(result)
             for result in data
+        ]
+
+    def _load_course_enrollments(self):
+        data = self.storage.load(
+            self.course_enrollments_file
+        )
+
+        return [
+            CourseEnrollment.from_dict(enrollment)
+            for enrollment in data
         ]
 
     def _has_passed_previous_module(
@@ -80,7 +70,6 @@ class EnrollmentService:
         student_id,
         module
     ):
-        # Check prerequisite module
         if module.sequence <= 1:
             return True
 
@@ -90,7 +79,6 @@ class EnrollmentService:
 
         previous_module = None
 
-        # Find the previous module
         for item in modules:
             if (
                 item.course_id == module.course_id
@@ -102,7 +90,6 @@ class EnrollmentService:
         if previous_module is None:
             return True
 
-        # Check if the student passed it
         for enrollment in enrollments:
             if (
                 enrollment.student_id == student_id
@@ -119,33 +106,30 @@ class EnrollmentService:
 
         return False
 
+    def _get_current_course_enrollment(
+        self,
+        student_id,
+        course_id
+    ):
+        course_enrollments = (
+            self._load_course_enrollments()
+        )
+
+        for enrollment in course_enrollments:
+            if (
+                enrollment.student_id == student_id
+                and enrollment.course_id == course_id
+                and enrollment.status == "active"
+            ):
+                return enrollment
+
+        return None
+
     def enroll_student(
         self,
         student_id,
-        module_id,
-        cohort_id
+        module_id
     ):
-        # Enroll student in a module
-        cohorts = self._load_cohorts()
-        enrollments = self._load_enrollments()
-
-        cohort = None
-
-        # Find selected cohort
-        for item in cohorts:
-            if item.cohort_id == cohort_id:
-                cohort = item
-                break
-
-        if cohort is None:
-            raise ValueError("Cohort not found.")
-
-        # Validate cohort and module
-        if cohort.module_id != module_id:
-            raise ValueError(
-                "This cohort does not belong to the selected module."
-            )
-
         modules = self._load_modules()
 
         module = None
@@ -156,9 +140,30 @@ class EnrollmentService:
                 break
 
         if module is None:
-            raise ValueError("Module not found.")
+            raise ValueError(
+                "Module not found."
+            )
 
-        # Enforce sequential progression
+        course_enrollment = (
+            self._get_current_course_enrollment(
+                student_id,
+                module.course_id
+            )
+        )
+
+        if course_enrollment is None:
+            raise ValueError(
+                "Student is not enrolled in this course."
+            )
+
+        cohort_id = course_enrollment.cohort_id
+
+        if not cohort_id:
+            raise ValueError(
+                "Student does not have a current cohort "
+                "for this course."
+            )
+
         if not self._has_passed_previous_module(
             student_id,
             module
@@ -167,7 +172,8 @@ class EnrollmentService:
                 "Student must pass the previous module first."
             )
 
-        # Prevent duplicate active enrollment
+        enrollments = self._load_enrollments()
+
         for enrollment in enrollments:
             if (
                 enrollment.student_id == student_id
@@ -177,9 +183,6 @@ class EnrollmentService:
                 raise ValueError(
                     "Student is already enrolled in this module."
                 )
-
-        # Add student to the cohort
-        cohort.add_student(student_id)
 
         enrollment_id = (
             f"ENR{len(enrollments) + 1:03d}"
@@ -194,34 +197,17 @@ class EnrollmentService:
 
         enrollments.append(enrollment)
 
-        # Save updated data
-        self._save_cohorts(cohorts)
         self._save_enrollments(enrollments)
 
         return enrollment
 
     def get_available_seats(self, cohort_id):
-        # Get remaining cohort seats
-        cohorts = self._load_cohorts()
-
-        for cohort in cohorts:
-            if cohort.cohort_id == cohort_id:
-                return cohort.seats_available
-
-        raise ValueError("Cohort not found.")
-
-    def get_cohorts_for_module(self, module_id):
-        # Get cohorts for a module
-        cohorts = self._load_cohorts()
-
-        return [
-            cohort
-            for cohort in cohorts
-            if cohort.module_id == module_id
-        ]
+        raise ValueError(
+            "Seat availability is managed at the course "
+            "cohort level."
+        )
 
     def get_student_enrollments(self, student_id):
-        # Get all student enrollments
         enrollments = self._load_enrollments()
 
         return [
