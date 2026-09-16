@@ -1,0 +1,23 @@
+[
+    {
+        "enrollment_id": "CENR001",
+        "student_id": "STU001",
+        "course_id": "CS001",
+        "cohort_id": "COH001",
+        "status": "active"
+    },
+    {
+        "enrollment_id": "CENR002",
+        "student_id": "STU002",
+        "course_id": "CS001",
+        "cohort_id": "COH001",
+        "status": "active"
+    },
+    {
+        "enrollment_id": "CENR003",
+        "student_id": "STU003",
+        "course_id": "CS001",
+        "cohort_id": "COH001",
+        "status": "active"
+    }
+]

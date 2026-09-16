@@ -21,11 +21,9 @@ def get_registration_details():
     name = console.input("Name: ")
     email = console.input("Email: ")
     password = console.input("Password: ")
-    course_id = console.input("Course ID: ")
 
     return (
         name,
         email,
-        password,
-        course_id
+        password
     )

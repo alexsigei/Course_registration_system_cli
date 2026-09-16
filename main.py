@@ -61,8 +61,9 @@ def interactive_mode():
                     f"\n[red]Login failed: {error}[/red]"
                 )
 
+       
         elif choice == "2":
-            name, email, password, course_id = (
+            name, email, password = (
                 get_registration_details()
             )
 
@@ -70,30 +71,18 @@ def interactive_mode():
                 user = auth.register_student(
                     name=name,
                     email=email,
-                    password=password,
-                    course_id=course_id
+                    password=password
                 )
 
                 console.print(
                     "\n[green]Account created successfully.[/green]"
                 )
 
-                console.print(
-                    f"Name: {user.name}"
-                )
-
-                console.print(
-                    f"Student ID: {user.student_id}"
-                )
-
-                console.print(
-                    f"Course: {user.course_id}"
-                )
-
             except ValueError as error:
                 console.print(
                     f"\n[red]Registration failed: {error}[/red]"
                 )
+
 
         elif choice == "3":
             console.print("\nGoodbye!")

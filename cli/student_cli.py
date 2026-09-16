@@ -2,6 +2,7 @@ from rich.console import Console
 from rich.table import Table
 
 from services.course_service import CourseService
+from services.course_enrollment_service import CourseEnrollmentService
 from services.enrollment_service import EnrollmentService
 from services.progression_service import ProgressionService
 from services.result_service import ResultService
@@ -56,6 +57,105 @@ def browse_courses():
     console.print(table)
 
 
+def enroll_in_course(user):
+    course_service = CourseService()
+    course_enrollment_service = CourseEnrollmentService()
+
+    courses = course_service.get_courses()
+
+    if not courses:
+        console.print(
+            "\n[yellow]No courses available.[/yellow]"
+        )
+        return
+
+    console.print(
+        "\n[bold cyan]Available Courses[/bold cyan]"
+    )
+
+    table = Table()
+
+    table.add_column("No.")
+    table.add_column("Course ID")
+    table.add_column("Course Name")
+
+    for index, course in enumerate(courses, start=1):
+        table.add_row(
+            str(index),
+            course.course_id,
+            course.name
+        )
+
+    console.print(table)
+
+    choice = input(
+        "\nSelect course number: "
+    ).strip()
+
+    try:
+        choice = int(choice)
+    except ValueError:
+        console.print(
+            "[red]Invalid course selection.[/red]"
+        )
+        return
+
+    if choice < 1 or choice > len(courses):
+        console.print(
+            "[red]Invalid course selection.[/red]"
+        )
+        return
+
+    selected_course = courses[choice - 1]
+
+    if course_enrollment_service.is_enrolled(
+        user.student_id,
+        selected_course.course_id
+    ):
+        console.print(
+            "\n[yellow]You are already enrolled "
+            "in this course.[/yellow]"
+        )
+        return
+
+    console.print(
+        f"\nYou selected: "
+        f"[bold]{selected_course.name}[/bold] "
+        f"({selected_course.course_id})"
+    )
+
+    confirmation = input(
+        "Enroll in this course? (y/n): "
+    ).strip().lower()
+
+    if confirmation != "y":
+        console.print(
+            "\n[yellow]Course enrollment cancelled.[/yellow]"
+        )
+        return
+
+    try:
+        enrollment = course_enrollment_service.enroll_student(
+            student_id=user.student_id,
+            course_id=selected_course.course_id
+        )
+
+        console.print(
+            "\n[green]Course enrollment successful![/green]"
+        )
+        console.print(
+            f"Enrollment ID: {enrollment.enrollment_id}"
+        )
+        console.print(
+            f"Course: {selected_course.name}"
+        )
+
+    except ValueError as error:
+        console.print(
+            f"\n[red]Enrollment failed: {error}[/red]"
+        )
+
+
 def view_modules():
     service = CourseService()
 
@@ -67,45 +167,146 @@ def view_modules():
         )
         return
 
-    console.print("\n[bold cyan]Course Modules[/bold cyan]")
+    console.print("\n[bold cyan]Available Courses[/bold cyan]")
 
-    for course in courses:
+    table = Table()
+
+    table.add_column("No.")
+    table.add_column("Course ID")
+    table.add_column("Course Name")
+
+    for index, course in enumerate(courses, start=1):
+        table.add_row(
+            str(index),
+            course.course_id,
+            course.name
+        )
+
+    console.print(table)
+
+    choice = input(
+        "\nSelect course number: "
+    ).strip()
+
+    try:
+        choice = int(choice)
+    except ValueError:
         console.print(
-            f"\n[bold]{course['course_id']} - "
-            f"{course['name']}[/bold]"
+            "[red]Invalid course selection.[/red]"
+        )
+        return
+
+    if choice < 1 or choice > len(courses):
+        console.print(
+            "[red]Invalid course selection.[/red]"
+        )
+        return
+
+    selected_course = courses[choice - 1]
+
+    modules = service.get_modules(
+        selected_course.course_id
+    )
+
+    console.print(
+        f"\n[bold cyan]{selected_course.name} "
+        f"({selected_course.course_id})[/bold cyan]"
+    )
+
+    if not modules:
+        console.print(
+            "[yellow]No modules available for this course.[/yellow]"
+        )
+        return
+
+    table = Table()
+
+    table.add_column("Module ID")
+    table.add_column("Module")
+    table.add_column("Sequence")
+    table.add_column("Pass Mark")
+
+    for module in modules:
+        table.add_row(
+            module.module_id,
+            module.name,
+            str(module.sequence),
+            str(module.pass_mark)
         )
 
-        modules = service.get_modules(
-            course["course_id"]
-        )
-
-        if not modules:
-            console.print(
-                "[yellow]No modules available.[/yellow]"
-            )
-            continue
-
-        table = Table()
-
-        table.add_column("Module ID")
-        table.add_column("Module")
-        table.add_column("Sequence")
-        table.add_column("Pass Mark")
-
-        for module in modules:
-            table.add_row(
-                module.module_id,
-                module.name,
-                str(module.sequence),
-                str(module.pass_mark)
-            )
-
-        console.print(table)
+    console.print(table)
 
 
 def enroll_in_module(user):
+    course_service = CourseService()
+    course_enrollment_service = CourseEnrollmentService()
     progression_service = ProgressionService()
     enrollment_service = EnrollmentService()
+
+    courses = course_service.get_courses()
+
+    if not courses:
+        console.print(
+            "\n[yellow]No courses available.[/yellow]"
+        )
+        return
+
+    console.print(
+        "\n[bold cyan]Available Courses[/bold cyan]"
+    )
+
+    table = Table()
+
+    table.add_column("No.")
+    table.add_column("Course ID")
+    table.add_column("Course Name")
+
+    for index, course in enumerate(courses, start=1):
+        table.add_row(
+            str(index),
+            course.course_id,
+            course.name
+        )
+
+    console.print(table)
+
+    choice = input(
+        "\nSelect course number: "
+    ).strip()
+
+    try:
+        choice = int(choice)
+    except ValueError:
+        console.print(
+            "[red]Invalid course selection.[/red]"
+        )
+        return
+
+    if choice < 1 or choice > len(courses):
+        console.print(
+            "[red]Invalid course selection.[/red]"
+        )
+        return
+
+    selected_course = courses[choice - 1]
+
+    course_id = selected_course.course_id
+
+    if not course_enrollment_service.is_enrolled(
+        user.student_id,
+        course_id
+    ):
+        console.print(
+            f"\n[yellow]You are not enrolled in "
+            f"{selected_course.name}.[/yellow]"
+        )
+        console.print(
+            "[yellow]Please enroll in the course "
+            "before enrolling in a module.[/yellow]"
+        )
+        return
+
+
 
     progress = progression_service.get_student_progress(
         user.student_id
@@ -115,17 +316,19 @@ def enroll_in_module(user):
         item
         for item in progress
         if item["status"] == "AVAILABLE"
+        and item["course_id"] == course_id
     ]
 
     if not available_modules:
         console.print(
             "\n[yellow]There are no modules currently "
-            "available for enrollment.[/yellow]"
+            "available for enrollment in this course.[/yellow]"
         )
         return
 
     console.print(
-        "\n[bold cyan]Available Modules[/bold cyan]"
+        f"\n[bold cyan]Available Modules - "
+        f"{selected_course.name}[/bold cyan]"
     )
 
     table = Table()
@@ -251,15 +454,21 @@ def enroll_in_module(user):
         )
 
         console.print(
-            "\n[green]Enrollment successful![/green]"
+            "\n[green]Module enrollment successful![/green]"
         )
 
         console.print(
             f"Enrollment ID: {enrollment.enrollment_id}"
         )
+
+        console.print(
+            f"Course: {selected_course.name}"
+        )
+
         console.print(
             f"Module: {enrollment.module_id}"
         )
+
         console.print(
             f"Cohort: {enrollment.cohort_id}"
         )
@@ -283,6 +492,7 @@ def enroll_in_module(user):
 def show_my_enrollments(user):
     enrollment_service = EnrollmentService()
     result_service = ResultService()
+    course_service = CourseService()
 
     student_enrollments = (
         enrollment_service.get_student_enrollments(
@@ -303,6 +513,7 @@ def show_my_enrollments(user):
     table = Table(title="My Enrollments")
 
     table.add_column("Enrollment")
+    table.add_column("Course")
     table.add_column("Module")
     table.add_column("Cohort")
     table.add_column("Status")
@@ -320,8 +531,23 @@ def show_my_enrollments(user):
                 grade = result.grade
                 break
 
+        module = course_service.get_module(
+            enrollment.module_id
+        )
+
+        course_name = "-"
+
+        if module:
+            course = course_service.get_course(
+                module.course_id
+            )
+
+            if course:
+                course_name = course.name
+
         table.add_row(
             enrollment.enrollment_id,
+            course_name,
             enrollment.module_id,
             enrollment.cohort_id,
             enrollment.status,
@@ -334,19 +560,90 @@ def show_my_enrollments(user):
 
 
 def show_progress(user):
-    service = ProgressionService()
+    course_enrollment_service = CourseEnrollmentService()
+    progression_service = ProgressionService()
+    course_service = CourseService()
 
-    progress = service.get_student_progress(
-        user.student_id
+    student_courses = (
+        course_enrollment_service.get_student_courses(
+            user.student_id
+        )
     )
 
-    if not progress:
+    if not student_courses:
         console.print(
-            "\n[yellow]No progression data available.[/yellow]"
+            "\n[yellow]You are not enrolled in any courses.[/yellow]"
         )
         return
 
-    table = Table(title="My Academic Progress")
+    console.print(
+        "\n[bold cyan]My Courses[/bold cyan]"
+    )
+
+    table = Table()
+
+    table.add_column("No.")
+    table.add_column("Course ID")
+    table.add_column("Course Name")
+
+    for index, course in enumerate(
+        student_courses,
+        start=1
+    ):
+        table.add_row(
+            str(index),
+            course["course_id"],
+            course["name"]
+        )
+
+    console.print(table)
+
+    choice = input(
+        "\nSelect course number: "
+    ).strip()
+
+    try:
+        choice = int(choice)
+    except ValueError:
+        console.print(
+            "[red]Invalid course selection.[/red]"
+        )
+        return
+
+    if choice < 1 or choice > len(student_courses):
+        console.print(
+            "[red]Invalid course selection.[/red]"
+        )
+        return
+
+    selected_course = student_courses[choice - 1]
+
+    course_id = selected_course["course_id"]
+    course_name = selected_course["name"]
+
+    progress = progression_service.get_student_progress(
+        user.student_id
+    )
+
+    course_progress = [
+        item
+        for item in progress
+        if item["course_id"] == course_id
+    ]
+
+    if not course_progress:
+        console.print(
+            "\n[yellow]No progression data available "
+            "for this course.[/yellow]"
+        )
+        return
+
+    console.print(
+        f"\n[bold cyan]{course_name} "
+        f"({course_id}) Progress[/bold cyan]"
+    )
+
+    table = Table()
 
     table.add_column("Module")
     table.add_column("Module Name")
@@ -356,7 +653,7 @@ def show_progress(user):
 
     passed_count = 0
 
-    for item in progress:
+    for item in course_progress:
 
         score = (
             str(item["score"])
@@ -381,10 +678,9 @@ def show_progress(user):
         if item["status"] == "PASSED":
             passed_count += 1
 
-    console.print()
     console.print(table)
 
-    total_modules = len(progress)
+    total_modules = len(course_progress)
 
     percentage = (
         (passed_count / total_modules) * 100
@@ -570,12 +866,13 @@ def show_student_menu(user):
 
         console.print("1. View Profile")
         console.print("2. Browse Courses")
-        console.print("3. View Course Modules")
-        console.print("4. Enroll in Module")
-        console.print("5. My Enrollments")
-        console.print("6. My Progress")
-        console.print("7. Repeat Failed Module")
-        console.print("8. Logout")
+        console.print("3. Enroll in Course")
+        console.print("4. View Course Modules")
+        console.print("5. Enroll in Module")
+        console.print("6. My Enrollments")
+        console.print("7. My Progress")
+        console.print("8. Repeat Failed Module")
+        console.print("9. Logout")
 
         choice = input(
             "\nChoose an option: "
@@ -588,21 +885,24 @@ def show_student_menu(user):
             browse_courses()
 
         elif choice == "3":
-            view_modules()
+            enroll_in_course(user)
 
         elif choice == "4":
-            enroll_in_module(user)
+            view_modules()
 
         elif choice == "5":
-            show_my_enrollments(user)
+            enroll_in_module(user)
 
         elif choice == "6":
-            show_progress(user)
+            show_my_enrollments(user)
 
         elif choice == "7":
-            repeat_failed_module(user)
+            show_progress(user)
 
         elif choice == "8":
+            repeat_failed_module(user)
+
+        elif choice == "9":
             console.print(
                 "\n[green]Logged out successfully.[/green]"
             )
@@ -613,3 +913,4 @@ def show_student_menu(user):
                 "\n[red]Invalid option. "
                 "Please try again.[/red]"
             )
+
